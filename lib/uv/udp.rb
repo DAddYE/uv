@@ -103,11 +103,11 @@ module UV
     include UdpWrappers
     layout :close_cb, :close_cb,
            :data, :pointer,
-           :loop, Loop,
+           :loop, Loop.by_ref,
            :type, :handle_type,
            :handle_queue, [:pointer, 2],
            :flags, :int,
-           :next_closing, Handle,
+           :next_closing, Handle.by_ref,
            :alloc_cb, :alloc_cb,
            :recv_cb, :udp_recv_cb,
            :io_watcher, Io.by_value,

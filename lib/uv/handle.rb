@@ -19,11 +19,11 @@ module UV
   class Handle < FFI::Struct
     layout :close_cb, :close_cb,
            :data, :pointer,
-           :loop, :pointer, # Loop,
+           :loop, Loop.by_ref,
            :type, :handle_type,
            :handle_queue, [:pointer, 2],
            :flags, :int,
-           :next_closing, :pointer # Handle
+           :next_closing, Handle.by_ref
   end
 
 end

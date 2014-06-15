@@ -44,7 +44,7 @@ module UV
            :cwd, :string,
            :flags, :uint,
            :stdio_count, :int,
-           :stdio, StdioContainer,
+           :stdio, StdioContainer.by_ref,
            :uid, :uint,
            :gid, :uint
   end

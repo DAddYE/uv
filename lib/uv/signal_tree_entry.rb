@@ -11,9 +11,9 @@ module UV
   # :rbe_color ::
   #   (Integer)
   class SignalTreeEntry < FFI::Struct
-    layout :rbe_left, :pointer,
-           :rbe_right, :pointer,
-           :rbe_parent, :pointer,
+    layout :rbe_left, Signal.by_ref,
+           :rbe_right, Signal.by_ref,
+           :rbe_parent, Signal.by_ref,
            :rbe_color, :int
   end
 

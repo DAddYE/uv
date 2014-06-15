@@ -37,11 +37,11 @@ module UV
     include FsPollWrappers
     layout :close_cb, :close_cb,
            :data, :pointer,
-           :loop, Loop,
+           :loop, Loop.by_ref,
            :type, :handle_type,
            :handle_queue, [:pointer, 2],
            :flags, :int,
-           :next_closing, Handle,
+           :next_closing, Handle.by_ref,
            :poll_ctx, :pointer
   end
 

@@ -42,11 +42,11 @@ module UV
     include IdleWrappers
     layout :close_cb, :close_cb,
            :data, :pointer,
-           :loop, Loop,
+           :loop, Loop.by_ref,
            :type, :handle_type,
            :handle_queue, [:pointer, 2],
            :flags, :int,
-           :next_closing, Handle,
+           :next_closing, Handle.by_ref,
            :idle_cb, :idle_cb,
            :queue, [:pointer, 2]
   end

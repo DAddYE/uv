@@ -11,9 +11,9 @@ module UV
   # :rbe_color ::
   #   (Integer)
   class TimerTreeEntry < FFI::Struct
-    layout :rbe_left, :pointer,
-           :rbe_right, :pointer,
-           :rbe_parent, :pointer,
+    layout :rbe_left, Timer.by_ref,
+           :rbe_right, Timer.by_ref,
+           :rbe_parent, Timer.by_ref,
            :rbe_color, :int
   end
 

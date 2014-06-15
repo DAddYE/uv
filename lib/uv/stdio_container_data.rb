@@ -7,7 +7,7 @@ module UV
   # :fd ::
   #   (Integer)
   class StdioContainerData < FFI::Union
-    layout :stream, Stream,
+    layout :stream, Stream.by_ref,
            :fd, :int
   end
 

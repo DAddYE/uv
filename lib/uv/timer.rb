@@ -63,11 +63,11 @@ module UV
     include TimerWrappers
     layout :close_cb, :close_cb,
            :data, :pointer,
-           :loop, :pointer,
+           :loop, Loop.by_ref,
            :type, :handle_type,
            :handle_queue, [:pointer, 2],
            :flags, :int,
-           :next_closing, Handle,
+           :next_closing, Handle.by_ref,
            :tree_entry, TimerTreeEntry.by_value,
            :timer_cb, :timer_cb,
            :timeout, :ulong_long,

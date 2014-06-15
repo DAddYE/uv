@@ -59,7 +59,7 @@ module UV
            :type, :req_type,
            :active_queue, [:pointer, 2],
            :fs_type, :fs_type,
-           :loop, Loop,
+           :loop, Loop.by_ref,
            :cb, :fs_cb,
            :result, :long,
            :ptr, :pointer,

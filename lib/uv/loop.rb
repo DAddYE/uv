@@ -96,7 +96,7 @@ module UV
            :wq, [:pointer, 2],
            :wq_mutex, :char,
            :wq_async, Async.by_value,
-           :closing_handles, Handle,
+           :closing_handles, Handle.by_ref,
            :process_handles, [[:pointer, 2], 1],
            :prepare_handles, [:pointer, 2],
            :check_handles, [:pointer, 2],

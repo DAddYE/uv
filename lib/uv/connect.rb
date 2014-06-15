@@ -19,7 +19,7 @@ module UV
            :type, :req_type,
            :active_queue, [:pointer, 2],
            :cb, :connect_cb,
-           :handle, Stream,
+           :handle, Stream.by_ref,
            :queue, [:pointer, 2]
   end
 

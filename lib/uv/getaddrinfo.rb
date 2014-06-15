@@ -30,7 +30,7 @@ module UV
     layout :data, :pointer,
            :type, :req_type,
            :active_queue, [:pointer, 2],
-           :loop, Loop,
+           :loop, Loop.by_ref,
            :work_req, Work.by_value,
            :cb, :getaddrinfo_cb,
            :hints, :pointer,

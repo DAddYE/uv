@@ -26,7 +26,7 @@ module UV
     layout :data, :pointer,
            :type, :req_type,
            :active_queue, [:pointer, 2],
-           :handle, Stream,
+           :handle, Stream.by_ref,
            :cb, :shutdown_cb
   end
 

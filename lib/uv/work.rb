@@ -13,7 +13,7 @@ module UV
   class Work < FFI::Struct
     layout :work, :pointer,
            :done, :pointer,
-           :loop, Loop,
+           :loop, Loop.by_ref,
            :wq, [:pointer, 2]
   end
 

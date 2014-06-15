@@ -76,11 +76,11 @@ module UV
     include SignalWrappers
     layout :close_cb, :close_cb,
            :data, :pointer,
-           :loop, :pointer,
+           :loop, Loop.by_ref,
            :type, :handle_type,
            :handle_queue, [:pointer, 2],
            :flags, :int,
-           :next_closing, Handle,
+           :next_closing, Handle.by_ref,
            :signal_cb, :signal_cb,
            :signum, :int,
            :tree_entry, SignalTreeEntry.by_value,

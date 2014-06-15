@@ -39,11 +39,11 @@ module UV
     include AsyncWrappers
     layout :close_cb, :close_cb,
            :data, :pointer,
-           :loop, :pointer,
+           :loop, Loop.by_ref,
            :type, :handle_type,
            :handle_queue, [:pointer, 2],
            :flags, :int,
-           :next_closing, Handle,
+           :next_closing, Handle.by_ref,
            :async_cb, :async_cb,
            :queue, [:pointer, 2],
            :pending, :int

@@ -52,7 +52,6 @@ module UV
   autoload :Timers, 'uv/timers'
   autoload :Loop, 'uv/loop'
 
-
   typedef :pointer, :io_cb
   typedef :pointer, :close_cb
   typedef :pointer, :async_cb
@@ -84,7 +83,7 @@ module UV
   # @return [Loop]
   # @scope class
   #
-  callback :io_cb, [Io, :uint], Loop
+  callback :io_cb, [Io.by_ref, :uint], Loop.by_ref
 
   # (Not documented)
   #
@@ -94,7 +93,7 @@ module UV
   # @return [Loop]
   # @scope class
   #
-  callback :async_cb, [Async, :uint], Loop
+  callback :async_cb, [Async.by_ref, :uint], Loop.by_ref
 
   # (Not documented)
   #
@@ -185,7 +184,7 @@ module UV
   # @return [Buf]
   # @scope class
   #
-  callback :alloc_cb, [Handle, :ulong], Buf.by_value
+  callback :alloc_cb, [Handle.by_ref, :ulong], Buf.by_value
 
   # `nread` is > 0 if there is data available, 0 if libuv is done reading for
   # now, or < 0 on error.
@@ -203,7 +202,7 @@ module UV
   # @return [Stream]
   # @scope class
   #
-  callback :read_cb, [:long, Buf.by_value], Stream
+  callback :read_cb, [:long, Buf.by_value], Stream.by_ref
 
   # Just like the uv_read_cb except that if the pending parameter is true
   # then you can use uv_accept() to pull the new handle into the process.
@@ -216,7 +215,7 @@ module UV
   # @return [Pipe]
   # @scope class
   #
-  callback :read2_cb, [:long, Buf.by_value, :handle_type], Pipe
+  callback :read2_cb, [:long, Buf.by_value, :handle_type], Pipe.by_ref
 
   # (Not documented)
   #
@@ -225,7 +224,7 @@ module UV
   # @return [Write]
   # @scope class
   #
-  callback :write_cb, [:int], Write
+  callback :write_cb, [:int], Write.by_ref
 
   # (Not documented)
   #
@@ -234,7 +233,7 @@ module UV
   # @return [Connect]
   # @scope class
   #
-  callback :connect_cb, [:int], Connect
+  callback :connect_cb, [:int], Connect.by_ref
 
   # (Not documented)
   #
@@ -243,7 +242,7 @@ module UV
   # @return [Shutdown]
   # @scope class
   #
-  callback :shutdown_cb, [:int], Shutdown
+  callback :shutdown_cb, [:int], Shutdown.by_ref
 
   # (Not documented)
   #
@@ -252,7 +251,7 @@ module UV
   # @return [Stream]
   # @scope class
   #
-  callback :connection_cb, [:int], Stream
+  callback :connection_cb, [:int], Stream.by_ref
 
   # (Not documented)
   #
@@ -261,7 +260,7 @@ module UV
   # @return [Handle]
   # @scope class
   #
-  callback :close_cb, [Handle], Handle
+  callback :close_cb, [Handle.by_ref], Handle.by_ref
 
   # (Not documented)
   #
@@ -271,7 +270,7 @@ module UV
   # @return [Poll]
   # @scope class
   #
-  callback :poll_cb, [:int, :int], Poll
+  callback :poll_cb, [:int, :int], Poll.by_ref
 
   # (Not documented)
   #
@@ -280,7 +279,7 @@ module UV
   # @return [Timer]
   # @scope class
   #
-  callback :timer_cb, [:int], Timer
+  callback :timer_cb, [:int], Timer.by_ref
 
   # TODO: do these really need a status argument?
   #
@@ -289,7 +288,7 @@ module UV
   # @return [Async]
   # @scope class
   #
-  callback :async_cb, [:int], Async
+  callback :async_cb, [:int], Async.by_ref
 
   # (Not documented)
   #
@@ -298,7 +297,7 @@ module UV
   # @return [Prepare]
   # @scope class
   #
-  callback :prepare_cb, [:int], Prepare
+  callback :prepare_cb, [:int], Prepare.by_ref
 
   # (Not documented)
   #
@@ -307,7 +306,7 @@ module UV
   # @return [Check]
   # @scope class
   #
-  callback :check_cb, [:int], Check
+  callback :check_cb, [:int], Check.by_ref
 
   # (Not documented)
   #
@@ -316,7 +315,7 @@ module UV
   # @return [Idle]
   # @scope class
   #
-  callback :idle_cb, [:int], Idle
+  callback :idle_cb, [:int], Idle.by_ref
 
   # (Not documented)
   #
@@ -326,7 +325,7 @@ module UV
   # @return [Process]
   # @scope class
   #
-  callback :exit_cb, [:long_long, :int], Process
+  callback :exit_cb, [:long_long, :int], Process.by_ref
 
   # (Not documented)
   #
@@ -335,7 +334,7 @@ module UV
   # @return [Handle]
   # @scope class
   #
-  callback :walk_cb, [:pointer], Handle
+  callback :walk_cb, [:pointer], Handle.by_ref
 
   # (Not documented)
   #
@@ -344,7 +343,7 @@ module UV
   # @return [Fs]
   # @scope class
   #
-  callback :fs_cb, [Fs], Fs
+  callback :fs_cb, [Fs.by_ref], Fs.by_ref
 
   # (Not documented)
   #
@@ -353,7 +352,7 @@ module UV
   # @return [Work]
   # @scope class
   #
-  callback :work_cb, [Work], Work
+  callback :work_cb, [Work.by_ref], Work.by_ref
 
   # (Not documented)
   #
@@ -362,7 +361,7 @@ module UV
   # @return [Work]
   # @scope class
   #
-  callback :after_work_cb, [:int], Work
+  callback :after_work_cb, [:int], Work.by_ref
 
   # (Not documented)
   #
@@ -372,7 +371,7 @@ module UV
   # @return [Getaddrinfo]
   # @scope class
   #
-  callback :getaddrinfo_cb, [:int, :pointer], Getaddrinfo
+  callback :getaddrinfo_cb, [:int, :pointer], Getaddrinfo.by_ref
 
   # This will be called repeatedly after the uv_fs_event_t is initialized.
   # If uv_fs_event_t was initialized with a directory the filename parameter
@@ -386,7 +385,7 @@ module UV
   # @return [FsEvent]
   # @scope class
   #
-  callback :fs_event_cb, [:string, :int, :int], FsEvent
+  callback :fs_event_cb, [:string, :int, :int], FsEvent.by_ref
 
   # (Not documented)
   #
@@ -397,7 +396,7 @@ module UV
   # @return [FsPoll]
   # @scope class
   #
-  callback :fs_poll_cb, [:int, Stat, Stat], FsPoll
+  callback :fs_poll_cb, [:int, Stat.by_ref, Stat.by_ref], FsPoll.by_ref
 
   # (Not documented)
   #
@@ -406,7 +405,7 @@ module UV
   # @return [Signal]
   # @scope class
   #
-  callback :signal_cb, [:int], Signal
+  callback :signal_cb, [:int], Signal.by_ref
 
   # Called after a uv_udp_send() or uv_udp_send6(). status 0 indicates
   # success otherwise error.
@@ -416,7 +415,7 @@ module UV
   # @return [UdpSend]
   # @scope class
   #
-  callback :udp_send_cb, [:int], UdpSend
+  callback :udp_send_cb, [:int], UdpSend.by_ref
 
   # Callback that is invoked when a new UDP datagram is received.
   #
@@ -439,7 +438,7 @@ module UV
   # @return [Udp]
   # @scope class
   #
-  callback :udp_recv_cb, [:long, Buf.by_value, :pointer, :uint], Udp
+  callback :udp_recv_cb, [:long, Buf.by_value, :pointer, :uint], Udp.by_ref
 
   # Returns the libuv version packed into a single integer. 8 bits are used for
   # each component, with the patch number stored in the 8 least significant
@@ -471,7 +470,7 @@ module UV
   # @return [Loop]
   # @scope class
   #
-  attach_function :loop_new, :uv_loop_new, [], Loop
+  attach_function :loop_new, :uv_loop_new, [], Loop.by_ref
 
   # (Not documented)
   #
@@ -480,7 +479,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :loop_delete, :uv_loop_delete, [Loop], :void
+  attach_function :loop_delete, :uv_loop_delete, [Loop.by_ref], :void
 
   # Returns the default loop.
   #
@@ -488,7 +487,7 @@ module UV
   # @return [Loop]
   # @scope class
   #
-  attach_function :default_loop, :uv_default_loop, [], Loop
+  attach_function :default_loop, :uv_default_loop, [], Loop.by_ref
 
   # This function runs the event loop. It will act differently depending on the
   # specified mode:
@@ -507,7 +506,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :run, :uv_run, [Loop, :run_mode], :int
+  attach_function :run, :uv_run, [Loop.by_ref, :run_mode], :int
 
   # This function will stop the event loop by forcing uv_run to end
   # as soon as possible, but not sooner than the next loop iteration.
@@ -519,7 +518,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :stop, :uv_stop, [Loop], :void
+  attach_function :stop, :uv_stop, [Loop.by_ref], :void
 
   # Manually modify the event loop's reference count. Useful if the user wants
   # to have a handle or timeout that doesn't keep the loop alive.
@@ -529,7 +528,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :ref, :uv_ref, [Handle], :void
+  attach_function :ref, :uv_ref, [Handle.by_ref], :void
 
   # (Not documented)
   #
@@ -538,7 +537,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :unref, :uv_unref, [Handle], :void
+  attach_function :unref, :uv_unref, [Handle.by_ref], :void
 
   # (Not documented)
   #
@@ -547,7 +546,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :has_ref, :uv_has_ref, [Handle], :int
+  attach_function :has_ref, :uv_has_ref, [Handle.by_ref], :int
 
   # Update the event loop's concept of "now". Libuv caches the current time
   # at the start of the event loop tick in order to reduce the number of
@@ -562,7 +561,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :update_time, :uv_update_time, [Loop], :void
+  attach_function :update_time, :uv_update_time, [Loop.by_ref], :void
 
   # Return the current timestamp in milliseconds. The timestamp is cached at
   # the start of the event loop tick, see |uv_update_time()| for details and
@@ -579,7 +578,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :now, :uv_now, [Loop], :ulong_long
+  attach_function :now, :uv_now, [Loop.by_ref], :ulong_long
 
   # Get backend file descriptor. Only kqueue, epoll and event ports are
   # supported.
@@ -599,7 +598,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :backend_fd, :uv_backend_fd, [Loop], :int
+  attach_function :backend_fd, :uv_backend_fd, [Loop.by_ref], :int
 
   # Get the poll timeout. The return value is in milliseconds, or -1 for no
   # timeout.
@@ -609,7 +608,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :backend_timeout, :uv_backend_timeout, [Loop], :int
+  attach_function :backend_timeout, :uv_backend_timeout, [Loop.by_ref], :int
 
   # Most functions return 0 on success or an error code < 0 on failure.
   #
@@ -643,7 +642,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :shutdown, :uv_shutdown, [Shutdown, Stream, :shutdown_cb], :int
+  attach_function :shutdown, :uv_shutdown, [Shutdown.by_ref, Stream.by_ref, :shutdown_cb], :int
 
   # Returns size of various handle types, useful for FFI
   # bindings to allocate correct memory without copying struct
@@ -673,7 +672,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :is_active, :uv_is_active, [Handle], :int
+  attach_function :is_active, :uv_is_active, [Handle.by_ref], :int
 
   # Walk the list of open handles.
   #
@@ -684,7 +683,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :walk, :uv_walk, [Loop, :walk_cb, :pointer], :void
+  attach_function :walk, :uv_walk, [Loop.by_ref, :walk_cb, :pointer], :void
 
   # Request handle to be closed. close_cb will be called asynchronously after
   # this call. This MUST be called on each handle before memory is released.
@@ -702,7 +701,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :close, :uv_close, [Handle, :close_cb], :void
+  attach_function :close, :uv_close, [Handle.by_ref, :close_cb], :void
 
   # Constructor for uv_buf_t.
   # Due to platform differences the user cannot rely on the ordering of the
@@ -752,7 +751,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :listen, :uv_listen, [Stream, :int, :connection_cb], :int
+  attach_function :listen, :uv_listen, [Stream.by_ref, :int, :connection_cb], :int
 
   # This call is used in conjunction with uv_listen() to accept incoming
   # connections. Call uv_accept after receiving a uv_connection_cb to accept
@@ -770,7 +769,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :accept, :uv_accept, [Stream, Stream], :int
+  attach_function :accept, :uv_accept, [Stream.by_ref, Stream.by_ref], :int
 
   # Read data from an incoming stream. The callback will be made several
   # times until there is no more data to read or uv_read_stop is called.
@@ -790,7 +789,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :read_start, :uv_read_start, [Stream, :alloc_cb, :read_cb], :int
+  attach_function :read_start, :uv_read_start, [Stream.by_ref, :alloc_cb, :read_cb], :int
 
   # (Not documented)
   #
@@ -799,7 +798,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :read_stop, :uv_read_stop, [Stream], :int
+  attach_function :read_stop, :uv_read_stop, [Stream.by_ref], :int
 
   # Extended read methods for receiving handles over a pipe. The pipe must be
   # initialized with ipc == 1.
@@ -811,7 +810,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :read2_start, :uv_read2_start, [Stream, :alloc_cb, :read2_cb], :int
+  attach_function :read2_start, :uv_read2_start, [Stream.by_ref, :alloc_cb, :read2_cb], :int
 
   # Write data to stream. Buffers are written in order. Example:
   #
@@ -841,7 +840,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :write, :uv_write, [Write, Stream, :pointer, :int, :write_cb], :int
+  attach_function :write, :uv_write, [Write.by_ref, Stream.by_ref, :pointer, :int, :write_cb], :int
 
   # Extended write function for sending handles over a pipe. The pipe must be
   # initialized with ipc == 1.
@@ -859,7 +858,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :write2, :uv_write2, [Write, Stream, :pointer, :int, Stream, :write_cb], :int
+  attach_function :write2, :uv_write2, [Write.by_ref, Stream.by_ref, :pointer, :int, Stream.by_ref, :write_cb], :int
 
   # Used to determine whether a stream is readable or writable.
   #
@@ -868,7 +867,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :is_readable, :uv_is_readable, [Stream], :int
+  attach_function :is_readable, :uv_is_readable, [Stream.by_ref], :int
 
   # (Not documented)
   #
@@ -877,7 +876,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :is_writable, :uv_is_writable, [Stream], :int
+  attach_function :is_writable, :uv_is_writable, [Stream.by_ref], :int
 
   # Enable or disable blocking mode for a stream.
   #
@@ -906,7 +905,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :stream_set_blocking, :uv_stream_set_blocking, [Stream, :int], :int
+  attach_function :stream_set_blocking, :uv_stream_set_blocking, [Stream.by_ref, :int], :int
 
   # Used to determine whether a stream is closing or closed.
   #
@@ -919,7 +918,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :is_closing, :uv_is_closing, [Handle], :int
+  attach_function :is_closing, :uv_is_closing, [Handle.by_ref], :int
 
   # (Not documented)
   #
@@ -929,7 +928,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_init, :uv_tcp_init, [Loop, Tcp], :int
+  attach_function :tcp_init, :uv_tcp_init, [Loop.by_ref, Tcp.by_ref], :int
 
   # Opens an existing file descriptor or SOCKET as a tcp handle.
   #
@@ -939,7 +938,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_open, :uv_tcp_open, [Tcp, :int], :int
+  attach_function :tcp_open, :uv_tcp_open, [Tcp.by_ref, :int], :int
 
   # Enable/disable Nagle's algorithm.
   #
@@ -949,7 +948,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_nodelay, :uv_tcp_nodelay, [Tcp, :int], :int
+  attach_function :tcp_nodelay, :uv_tcp_nodelay, [Tcp.by_ref, :int], :int
 
   # Enable/disable TCP keep-alive.
   #
@@ -962,7 +961,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_keepalive, :uv_tcp_keepalive, [Tcp, :int, :uint], :int
+  attach_function :tcp_keepalive, :uv_tcp_keepalive, [Tcp.by_ref, :int, :uint], :int
 
   # Enable/disable simultaneous asynchronous accept requests that are
   # queued by the operating system when listening for new tcp connections.
@@ -977,7 +976,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_simultaneous_accepts, :uv_tcp_simultaneous_accepts, [Tcp, :int], :int
+  attach_function :tcp_simultaneous_accepts, :uv_tcp_simultaneous_accepts, [Tcp.by_ref, :int], :int
 
   # (Not documented)
   #
@@ -987,7 +986,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_bind, :uv_tcp_bind, [Tcp, :char], :int
+  attach_function :tcp_bind, :uv_tcp_bind, [Tcp.by_ref, :char], :int
 
   # (Not documented)
   #
@@ -997,7 +996,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_bind6, :uv_tcp_bind6, [Tcp, :char], :int
+  attach_function :tcp_bind6, :uv_tcp_bind6, [Tcp.by_ref, :char], :int
 
   # (Not documented)
   #
@@ -1008,7 +1007,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_getsockname, :uv_tcp_getsockname, [Tcp, :pointer, :pointer], :int
+  attach_function :tcp_getsockname, :uv_tcp_getsockname, [Tcp.by_ref, :pointer, :pointer], :int
 
   # (Not documented)
   #
@@ -1019,7 +1018,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_getpeername, :uv_tcp_getpeername, [Tcp, :pointer, :pointer], :int
+  attach_function :tcp_getpeername, :uv_tcp_getpeername, [Tcp.by_ref, :pointer, :pointer], :int
 
   # uv_tcp_connect, uv_tcp_connect6
   # These functions establish IPv4 and IPv6 TCP connections. Provide an
@@ -1034,7 +1033,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_connect, :uv_tcp_connect, [Connect, Tcp, :char, :connect_cb], :int
+  attach_function :tcp_connect, :uv_tcp_connect, [Connect.by_ref, Tcp.by_ref, :char, :connect_cb], :int
 
   # (Not documented)
   #
@@ -1046,7 +1045,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_connect6, :uv_tcp_connect6, [Connect, Tcp, :char, :connect_cb], :int
+  attach_function :tcp_connect6, :uv_tcp_connect6, [Connect.by_ref, Tcp.by_ref, :char, :connect_cb], :int
 
   # Initialize a new UDP handle. The actual socket is created lazily.
   # Returns 0 on success.
@@ -1057,7 +1056,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_init, :uv_udp_init, [Loop, Udp], :int
+  attach_function :udp_init, :uv_udp_init, [Loop.by_ref, Udp.by_ref], :int
 
   # Opens an existing file descriptor or SOCKET as a udp handle.
   #
@@ -1073,7 +1072,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_open, :uv_udp_open, [Udp, :int], :int
+  attach_function :udp_open, :uv_udp_open, [Udp.by_ref, :int], :int
 
   # Bind to a IPv4 address and port.
   #
@@ -1092,7 +1091,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_bind, :uv_udp_bind, [Udp, :char, :uint], :int
+  attach_function :udp_bind, :uv_udp_bind, [Udp.by_ref, :char, :uint], :int
 
   # Bind to a IPv6 address and port.
   #
@@ -1111,7 +1110,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_bind6, :uv_udp_bind6, [Udp, :char, :uint], :int
+  attach_function :udp_bind6, :uv_udp_bind6, [Udp.by_ref, :char, :uint], :int
 
   # (Not documented)
   #
@@ -1122,7 +1121,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_getsockname, :uv_udp_getsockname, [Udp, :pointer, :pointer], :int
+  attach_function :udp_getsockname, :uv_udp_getsockname, [Udp.by_ref, :pointer, :pointer], :int
 
   # Set membership for a multicast address
   #
@@ -1144,7 +1143,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_set_membership, :uv_udp_set_membership, [Udp, :string, :string, :membership], :int
+  attach_function :udp_set_membership, :uv_udp_set_membership, [Udp.by_ref, :string, :string, :membership], :int
 
   # Set IP multicast loop flag. Makes multicast packets loop back to
   # local sockets.
@@ -1163,7 +1162,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_set_multicast_loop, :uv_udp_set_multicast_loop, [Udp, :int], :int
+  attach_function :udp_set_multicast_loop, :uv_udp_set_multicast_loop, [Udp.by_ref, :int], :int
 
   # Set the multicast ttl
   #
@@ -1181,7 +1180,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_set_multicast_ttl, :uv_udp_set_multicast_ttl, [Udp, :int], :int
+  attach_function :udp_set_multicast_ttl, :uv_udp_set_multicast_ttl, [Udp.by_ref, :int], :int
 
   # Set broadcast on or off
   #
@@ -1199,7 +1198,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_set_broadcast, :uv_udp_set_broadcast, [Udp, :int], :int
+  attach_function :udp_set_broadcast, :uv_udp_set_broadcast, [Udp.by_ref, :int], :int
 
   # Set the time to live
   #
@@ -1217,7 +1216,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_set_ttl, :uv_udp_set_ttl, [Udp, :int], :int
+  attach_function :udp_set_ttl, :uv_udp_set_ttl, [Udp.by_ref, :int], :int
 
   # Send data. If the socket has not previously been bound with `uv_udp_bind`
   # or `uv_udp_bind6`, it is bound to 0.0.0.0 (the "all interfaces" address)
@@ -1244,7 +1243,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_send, :uv_udp_send, [UdpSend, Udp, :pointer, :int, :char, :udp_send_cb], :int
+  attach_function :udp_send, :uv_udp_send, [UdpSend.by_ref, Udp.by_ref, :pointer, :int, :char, :udp_send_cb], :int
 
   # Send data. If the socket has not previously been bound with `uv_udp_bind6`,
   # it is bound to ::0 (the "all interfaces" address) and a random port number.
@@ -1270,7 +1269,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_send6, :uv_udp_send6, [UdpSend, Udp, :pointer, :int, :char, :udp_send_cb], :int
+  attach_function :udp_send6, :uv_udp_send6, [UdpSend.by_ref, Udp.by_ref, :pointer, :int, :char, :udp_send_cb], :int
 
   # Receive data. If the socket has not previously been bound with `uv_udp_bind`
   # or `uv_udp_bind6`, it is bound to 0.0.0.0 (the "all interfaces" address)
@@ -1291,7 +1290,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_recv_start, :uv_udp_recv_start, [Udp, :alloc_cb, :udp_recv_cb], :int
+  attach_function :udp_recv_start, :uv_udp_recv_start, [Udp.by_ref, :alloc_cb, :udp_recv_cb], :int
 
   # Stop listening for incoming datagrams.
   #
@@ -1306,7 +1305,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_recv_stop, :uv_udp_recv_stop, [Udp], :int
+  attach_function :udp_recv_stop, :uv_udp_recv_stop, [Udp.by_ref], :int
 
   # Initialize a new TTY stream with the given file descriptor. Usually the
   # file descriptor will be
@@ -1326,7 +1325,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tty_init, :uv_tty_init, [Loop, Tty, :int, :int], :int
+  attach_function :tty_init, :uv_tty_init, [Loop.by_ref, Tty.by_ref, :int, :int], :int
 
   # Set mode. 0 for normal, 1 for raw.
   #
@@ -1336,7 +1335,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tty_set_mode, :uv_tty_set_mode, [Tty, :int], :int
+  attach_function :tty_set_mode, :uv_tty_set_mode, [Tty.by_ref, :int], :int
 
   # To be called when the program exits. Resets TTY settings to default
   # values for the next process to take over.
@@ -1356,7 +1355,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :tty_get_winsize, :uv_tty_get_winsize, [Tty, :pointer, :pointer], :int
+  attach_function :tty_get_winsize, :uv_tty_get_winsize, [Tty.by_ref, :pointer, :pointer], :int
 
   # Used to detect what type of stream should be used with a given file
   # descriptor. Usually this will be used during initialization to guess the
@@ -1380,7 +1379,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :pipe_init, :uv_pipe_init, [Loop, Pipe, :int], :int
+  attach_function :pipe_init, :uv_pipe_init, [Loop.by_ref, Pipe.by_ref, :int], :int
 
   # Opens an existing file descriptor or HANDLE as a pipe.
   #
@@ -1390,7 +1389,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :pipe_open, :uv_pipe_open, [Pipe, :int], :int
+  attach_function :pipe_open, :uv_pipe_open, [Pipe.by_ref, :int], :int
 
   # (Not documented)
   #
@@ -1400,7 +1399,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :pipe_bind, :uv_pipe_bind, [Pipe, :string], :int
+  attach_function :pipe_bind, :uv_pipe_bind, [Pipe.by_ref, :string], :int
 
   # (Not documented)
   #
@@ -1412,7 +1411,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :pipe_connect, :uv_pipe_connect, [Connect, Pipe, :string, :connect_cb], :void
+  attach_function :pipe_connect, :uv_pipe_connect, [Connect.by_ref, Pipe.by_ref, :string, :connect_cb], :void
 
   # This setting applies to Windows only.
   # Set the number of pending pipe instance handles when the pipe server
@@ -1424,7 +1423,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :pipe_pending_instances, :uv_pipe_pending_instances, [Pipe, :int], :void
+  attach_function :pipe_pending_instances, :uv_pipe_pending_instances, [Pipe.by_ref, :int], :void
 
   # Initialize the poll watcher using a file descriptor.
   #
@@ -1435,7 +1434,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :poll_init, :uv_poll_init, [Loop, Poll, :int], :int
+  attach_function :poll_init, :uv_poll_init, [Loop.by_ref, Poll.by_ref, :int], :int
 
   # identical to uv_poll_init. On windows it takes a SOCKET handle.
   #
@@ -1446,7 +1445,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :poll_init_socket, :uv_poll_init_socket, [Loop, Poll, :int], :int
+  attach_function :poll_init_socket, :uv_poll_init_socket, [Loop.by_ref, Poll.by_ref, :int], :int
 
   # Starts polling the file descriptor. `events` is a bitmask consisting made up
   # of UV_READABLE and UV_WRITABLE. As soon as an event is detected the callback
@@ -1468,7 +1467,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :poll_start, :uv_poll_start, [Poll, :int, :poll_cb], :int
+  attach_function :poll_start, :uv_poll_start, [Poll.by_ref, :int, :poll_cb], :int
 
   # Stops polling the file descriptor.
   #
@@ -1477,7 +1476,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :poll_stop, :uv_poll_stop, [Poll], :int
+  attach_function :poll_stop, :uv_poll_stop, [Poll.by_ref], :int
 
   # (Not documented)
   #
@@ -1487,7 +1486,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :prepare_init, :uv_prepare_init, [Loop, Prepare], :int
+  attach_function :prepare_init, :uv_prepare_init, [Loop.by_ref, Prepare.by_ref], :int
 
   # (Not documented)
   #
@@ -1497,7 +1496,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :prepare_start, :uv_prepare_start, [Prepare, :prepare_cb], :int
+  attach_function :prepare_start, :uv_prepare_start, [Prepare.by_ref, :prepare_cb], :int
 
   # (Not documented)
   #
@@ -1506,7 +1505,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :prepare_stop, :uv_prepare_stop, [Prepare], :int
+  attach_function :prepare_stop, :uv_prepare_stop, [Prepare.by_ref], :int
 
   # (Not documented)
   #
@@ -1516,7 +1515,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :check_init, :uv_check_init, [Loop, Check], :int
+  attach_function :check_init, :uv_check_init, [Loop.by_ref, Check.by_ref], :int
 
   # (Not documented)
   #
@@ -1526,7 +1525,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :check_start, :uv_check_start, [Check, :check_cb], :int
+  attach_function :check_start, :uv_check_start, [Check.by_ref, :check_cb], :int
 
   # (Not documented)
   #
@@ -1535,7 +1534,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :check_stop, :uv_check_stop, [Check], :int
+  attach_function :check_stop, :uv_check_stop, [Check.by_ref], :int
 
   # (Not documented)
   #
@@ -1545,7 +1544,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :idle_init, :uv_idle_init, [Loop, Idle], :int
+  attach_function :idle_init, :uv_idle_init, [Loop.by_ref, Idle.by_ref], :int
 
   # (Not documented)
   #
@@ -1555,7 +1554,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :idle_start, :uv_idle_start, [Idle, :idle_cb], :int
+  attach_function :idle_start, :uv_idle_start, [Idle.by_ref, :idle_cb], :int
 
   # (Not documented)
   #
@@ -1564,7 +1563,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :idle_stop, :uv_idle_stop, [Idle], :int
+  attach_function :idle_stop, :uv_idle_stop, [Idle.by_ref], :int
 
   # Initialize the uv_async_t handle. A NULL callback is allowed.
   #
@@ -1578,7 +1577,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :async_init, :uv_async_init, [Loop, Async, :async_cb], :int
+  attach_function :async_init, :uv_async_init, [Loop.by_ref, Async.by_ref, :async_cb], :int
 
   # This can be called from other threads to wake up a libuv thread.
   #
@@ -1589,7 +1588,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :async_send, :uv_async_send, [Async], :int
+  attach_function :async_send, :uv_async_send, [Async.by_ref], :int
 
   # (Not documented)
   #
@@ -1599,7 +1598,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :timer_init, :uv_timer_init, [Loop, Timer], :int
+  attach_function :timer_init, :uv_timer_init, [Loop.by_ref, Timer.by_ref], :int
 
   # Start the timer. `timeout` and `repeat` are in milliseconds.
   #
@@ -1616,7 +1615,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :timer_start, :uv_timer_start, [Timer, :timer_cb, :ulong_long, :ulong_long], :int
+  attach_function :timer_start, :uv_timer_start, [Timer.by_ref, :timer_cb, :ulong_long, :ulong_long], :int
 
   # (Not documented)
   #
@@ -1625,7 +1624,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :timer_stop, :uv_timer_stop, [Timer], :int
+  attach_function :timer_stop, :uv_timer_stop, [Timer.by_ref], :int
 
   # Stop the timer, and if it is repeating restart it using the repeat value
   # as the timeout. If the timer has never been started before it returns
@@ -1636,7 +1635,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :timer_again, :uv_timer_again, [Timer], :int
+  attach_function :timer_again, :uv_timer_again, [Timer.by_ref], :int
 
   # Set the repeat value in milliseconds. Note that if the repeat value is set
   # from a timer callback it does not immediately take effect. If the timer was
@@ -1649,7 +1648,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :timer_set_repeat, :uv_timer_set_repeat, [Timer, :ulong_long], :void
+  attach_function :timer_set_repeat, :uv_timer_set_repeat, [Timer.by_ref, :ulong_long], :void
 
   # (Not documented)
   #
@@ -1658,7 +1657,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :timer_get_repeat, :uv_timer_get_repeat, [Timer], :ulong_long
+  attach_function :timer_get_repeat, :uv_timer_get_repeat, [Timer.by_ref], :ulong_long
 
   # Asynchronous getaddrinfo(3).
   #
@@ -1687,7 +1686,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :getaddrinfo, :uv_getaddrinfo, [Loop, Getaddrinfo, :getaddrinfo_cb, :string, :string, :pointer], :int
+  attach_function :getaddrinfo, :uv_getaddrinfo, [Loop.by_ref, Getaddrinfo.by_ref, :getaddrinfo_cb, :string, :string, :pointer], :int
 
   # Free the struct addrinfo. Passing NULL is allowed and is a no-op.
   #
@@ -1707,7 +1706,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :spawn, :uv_spawn, [Loop, Process, ProcessOptions.by_value], :int
+  attach_function :spawn, :uv_spawn, [Loop.by_ref, Process.by_ref, ProcessOptions.by_value], :int
 
   # Kills the process with the specified signal. The user must still
   # call uv_close on the process.
@@ -1718,7 +1717,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :process_kill, :uv_process_kill, [Process, :int], :int
+  attach_function :process_kill, :uv_process_kill, [Process.by_ref, :int], :int
 
   # Kills the process with the specified signal.
   #
@@ -1740,7 +1739,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :queue_work, :uv_queue_work, [Loop, Work, :work_cb, :after_work_cb], :int
+  attach_function :queue_work, :uv_queue_work, [Loop.by_ref, Work.by_ref, :work_cb, :after_work_cb], :int
 
   # Cancel a pending request. Fails if the request is executing or has finished
   # executing.
@@ -1769,7 +1768,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :cancel, :uv_cancel, [Req], :int
+  attach_function :cancel, :uv_cancel, [Req.by_ref], :int
 
   # (Not documented)
   #
@@ -1837,7 +1836,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :free_cpu_info, :uv_free_cpu_info, [CpuInfo, :int], :void
+  attach_function :free_cpu_info, :uv_free_cpu_info, [CpuInfo.by_ref, :int], :void
 
   # This allocates addresses array, and sets count.  The array
   # is freed using uv_free_interface_addresses().
@@ -1858,7 +1857,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :free_interface_addresses, :uv_free_interface_addresses, [InterfaceAddress, :int], :void
+  attach_function :free_interface_addresses, :uv_free_interface_addresses, [InterfaceAddress.by_ref, :int], :void
 
   # (Not documented)
   #
@@ -1867,7 +1866,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :fs_req_cleanup, :uv_fs_req_cleanup, [Fs], :void
+  attach_function :fs_req_cleanup, :uv_fs_req_cleanup, [Fs.by_ref], :void
 
   # (Not documented)
   #
@@ -1879,7 +1878,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_close, :uv_fs_close, [Loop, Fs, :int, :fs_cb], :int
+  attach_function :fs_close, :uv_fs_close, [Loop.by_ref, Fs.by_ref, :int, :fs_cb], :int
 
   # (Not documented)
   #
@@ -1893,7 +1892,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_open, :uv_fs_open, [Loop, Fs, :string, :int, :int, :fs_cb], :int
+  attach_function :fs_open, :uv_fs_open, [Loop.by_ref, Fs.by_ref, :string, :int, :int, :fs_cb], :int
 
   # (Not documented)
   #
@@ -1908,7 +1907,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_read, :uv_fs_read, [Loop, Fs, :int, :pointer, :ulong, :long_long, :fs_cb], :int
+  attach_function :fs_read, :uv_fs_read, [Loop.by_ref, Fs.by_ref, :int, :pointer, :ulong, :long_long, :fs_cb], :int
 
   # (Not documented)
   #
@@ -1920,7 +1919,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_unlink, :uv_fs_unlink, [Loop, Fs, :string, :fs_cb], :int
+  attach_function :fs_unlink, :uv_fs_unlink, [Loop.by_ref, Fs.by_ref, :string, :fs_cb], :int
 
   # (Not documented)
   #
@@ -1935,7 +1934,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_write, :uv_fs_write, [Loop, Fs, :int, :pointer, :ulong, :long_long, :fs_cb], :int
+  attach_function :fs_write, :uv_fs_write, [Loop.by_ref, Fs.by_ref, :int, :pointer, :ulong, :long_long, :fs_cb], :int
 
   # (Not documented)
   #
@@ -1948,7 +1947,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_mkdir, :uv_fs_mkdir, [Loop, Fs, :string, :int, :fs_cb], :int
+  attach_function :fs_mkdir, :uv_fs_mkdir, [Loop.by_ref, Fs.by_ref, :string, :int, :fs_cb], :int
 
   # (Not documented)
   #
@@ -1960,7 +1959,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_rmdir, :uv_fs_rmdir, [Loop, Fs, :string, :fs_cb], :int
+  attach_function :fs_rmdir, :uv_fs_rmdir, [Loop.by_ref, Fs.by_ref, :string, :fs_cb], :int
 
   # (Not documented)
   #
@@ -1973,7 +1972,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_readdir, :uv_fs_readdir, [Loop, Fs, :string, :int, :fs_cb], :int
+  attach_function :fs_readdir, :uv_fs_readdir, [Loop.by_ref, Fs.by_ref, :string, :int, :fs_cb], :int
 
   # (Not documented)
   #
@@ -1985,7 +1984,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_stat, :uv_fs_stat, [Loop, Fs, :string, :fs_cb], :int
+  attach_function :fs_stat, :uv_fs_stat, [Loop.by_ref, Fs.by_ref, :string, :fs_cb], :int
 
   # (Not documented)
   #
@@ -1997,7 +1996,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_fstat, :uv_fs_fstat, [Loop, Fs, :int, :fs_cb], :int
+  attach_function :fs_fstat, :uv_fs_fstat, [Loop.by_ref, Fs.by_ref, :int, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2010,7 +2009,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_rename, :uv_fs_rename, [Loop, Fs, :string, :string, :fs_cb], :int
+  attach_function :fs_rename, :uv_fs_rename, [Loop.by_ref, Fs.by_ref, :string, :string, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2022,7 +2021,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_fsync, :uv_fs_fsync, [Loop, Fs, :int, :fs_cb], :int
+  attach_function :fs_fsync, :uv_fs_fsync, [Loop.by_ref, Fs.by_ref, :int, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2034,7 +2033,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_fdatasync, :uv_fs_fdatasync, [Loop, Fs, :int, :fs_cb], :int
+  attach_function :fs_fdatasync, :uv_fs_fdatasync, [Loop.by_ref, Fs.by_ref, :int, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2047,7 +2046,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_ftruncate, :uv_fs_ftruncate, [Loop, Fs, :int, :long_long, :fs_cb], :int
+  attach_function :fs_ftruncate, :uv_fs_ftruncate, [Loop.by_ref, Fs.by_ref, :int, :long_long, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2062,7 +2061,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_sendfile, :uv_fs_sendfile, [Loop, Fs, :int, :int, :long_long, :ulong, :fs_cb], :int
+  attach_function :fs_sendfile, :uv_fs_sendfile, [Loop.by_ref, Fs.by_ref, :int, :int, :long_long, :ulong, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2075,7 +2074,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_chmod, :uv_fs_chmod, [Loop, Fs, :string, :int, :fs_cb], :int
+  attach_function :fs_chmod, :uv_fs_chmod, [Loop.by_ref, Fs.by_ref, :string, :int, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2089,7 +2088,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_utime, :uv_fs_utime, [Loop, Fs, :string, :double, :double, :fs_cb], :int
+  attach_function :fs_utime, :uv_fs_utime, [Loop.by_ref, Fs.by_ref, :string, :double, :double, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2103,7 +2102,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_futime, :uv_fs_futime, [Loop, Fs, :int, :double, :double, :fs_cb], :int
+  attach_function :fs_futime, :uv_fs_futime, [Loop.by_ref, Fs.by_ref, :int, :double, :double, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2115,7 +2114,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_lstat, :uv_fs_lstat, [Loop, Fs, :string, :fs_cb], :int
+  attach_function :fs_lstat, :uv_fs_lstat, [Loop.by_ref, Fs.by_ref, :string, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2128,7 +2127,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_link, :uv_fs_link, [Loop, Fs, :string, :string, :fs_cb], :int
+  attach_function :fs_link, :uv_fs_link, [Loop.by_ref, Fs.by_ref, :string, :string, :fs_cb], :int
 
   # This flag can be used with uv_fs_symlink on Windows
   # to specify whether the symlink is to be created using junction points.
@@ -2143,7 +2142,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_symlink, :uv_fs_symlink, [Loop, Fs, :string, :string, :int, :fs_cb], :int
+  attach_function :fs_symlink, :uv_fs_symlink, [Loop.by_ref, Fs.by_ref, :string, :string, :int, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2155,7 +2154,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_readlink, :uv_fs_readlink, [Loop, Fs, :string, :fs_cb], :int
+  attach_function :fs_readlink, :uv_fs_readlink, [Loop.by_ref, Fs.by_ref, :string, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2168,7 +2167,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_fchmod, :uv_fs_fchmod, [Loop, Fs, :int, :int, :fs_cb], :int
+  attach_function :fs_fchmod, :uv_fs_fchmod, [Loop.by_ref, Fs.by_ref, :int, :int, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2182,7 +2181,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_chown, :uv_fs_chown, [Loop, Fs, :string, :uint, :uint, :fs_cb], :int
+  attach_function :fs_chown, :uv_fs_chown, [Loop.by_ref, Fs.by_ref, :string, :uint, :uint, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2196,7 +2195,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_fchown, :uv_fs_fchown, [Loop, Fs, :int, :uint, :uint, :fs_cb], :int
+  attach_function :fs_fchown, :uv_fs_fchown, [Loop.by_ref, Fs.by_ref, :int, :uint, :uint, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2206,7 +2205,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_poll_init, :uv_fs_poll_init, [Loop, FsPoll], :int
+  attach_function :fs_poll_init, :uv_fs_poll_init, [Loop.by_ref, FsPoll.by_ref], :int
 
   # Check the file at `path` for changes every `interval` milliseconds.
   #
@@ -2230,7 +2229,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_poll_start, :uv_fs_poll_start, [FsPoll, :fs_poll_cb, :string, :uint], :int
+  attach_function :fs_poll_start, :uv_fs_poll_start, [FsPoll.by_ref, :fs_poll_cb, :string, :uint], :int
 
   # (Not documented)
   #
@@ -2239,7 +2238,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_poll_stop, :uv_fs_poll_stop, [FsPoll], :int
+  attach_function :fs_poll_stop, :uv_fs_poll_stop, [FsPoll.by_ref], :int
 
   # (Not documented)
   #
@@ -2249,7 +2248,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :signal_init, :uv_signal_init, [Loop, Signal], :int
+  attach_function :signal_init, :uv_signal_init, [Loop.by_ref, Signal.by_ref], :int
 
   # (Not documented)
   #
@@ -2260,7 +2259,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :signal_start, :uv_signal_start, [Signal, :signal_cb, :int], :int
+  attach_function :signal_start, :uv_signal_start, [Signal.by_ref, :signal_cb, :int], :int
 
   # (Not documented)
   #
@@ -2269,7 +2268,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :signal_stop, :uv_signal_stop, [Signal], :int
+  attach_function :signal_stop, :uv_signal_stop, [Signal.by_ref], :int
 
   # Gets load average.
   # See: http://en.wikipedia.org/wiki/Load_(computing)
@@ -2293,7 +2292,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_event_init, :uv_fs_event_init, [Loop, FsEvent, :string, :fs_event_cb, :int], :int
+  attach_function :fs_event_init, :uv_fs_event_init, [Loop.by_ref, FsEvent.by_ref, :string, :fs_event_cb, :int], :int
 
   # Convert string ip addresses to binary structures
   #
@@ -2445,7 +2444,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :dlopen, :uv_dlopen, [:string, Lib], :int
+  attach_function :dlopen, :uv_dlopen, [:string, Lib.by_ref], :int
 
   # Close the shared library.
   #
@@ -2454,7 +2453,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :dlclose, :uv_dlclose, [Lib], :void
+  attach_function :dlclose, :uv_dlclose, [Lib.by_ref], :void
 
   # Retrieves a data pointer from a dynamic library. It is legal for a symbol to
   # map to NULL. Returns 0 on success and -1 if the symbol was not found.
@@ -2466,7 +2465,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :dlsym, :uv_dlsym, [Lib, :string, :pointer], :int
+  attach_function :dlsym, :uv_dlsym, [Lib.by_ref, :string, :pointer], :int
 
   # Returns the last uv_dlopen() or uv_dlsym() error message.
   #
@@ -2475,7 +2474,7 @@ module UV
   # @return [String]
   # @scope class
   #
-  attach_function :dlerror, :uv_dlerror, [Lib], :string
+  attach_function :dlerror, :uv_dlerror, [Lib.by_ref], :string
 
   # The mutex functions return 0 on success or an error code < 0
   # (unless the return type is void, of course).
@@ -2716,7 +2715,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :barrier_init, :uv_barrier_init, [Barrier, :uint], :int
+  attach_function :barrier_init, :uv_barrier_init, [Barrier.by_ref, :uint], :int
 
   # (Not documented)
   #
@@ -2725,7 +2724,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :barrier_destroy, :uv_barrier_destroy, [Barrier], :void
+  attach_function :barrier_destroy, :uv_barrier_destroy, [Barrier.by_ref], :void
 
   # (Not documented)
   #
@@ -2734,7 +2733,7 @@ module UV
   # @return [nil]
   # @scope class
   #
-  attach_function :barrier_wait, :uv_barrier_wait, [Barrier], :void
+  attach_function :barrier_wait, :uv_barrier_wait, [Barrier.by_ref], :void
 
   # Runs a function once and only once. Concurrent calls to uv_once() with the
   # same guard will block all callers except one (it's unspecified which one).

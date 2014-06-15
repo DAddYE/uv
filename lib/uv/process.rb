@@ -36,11 +36,11 @@ module UV
     include ProcessWrappers
     layout :close_cb, :close_cb,
            :data, :pointer,
-           :loop, Loop,
+           :loop, Loop.by_ref,
            :type, :handle_type,
            :handle_queue, [:pointer, 2],
            :flags, :int,
-           :next_closing, Handle,
+           :next_closing, Handle.by_ref,
            :exit_cb, :exit_cb,
            :pid, :int,
            :queue, [:pointer, 2],

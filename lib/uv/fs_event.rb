@@ -41,11 +41,11 @@ module UV
   class FsEvent < FFI::Struct
     layout :close_cb, :close_cb,
            :data, :pointer,
-           :loop, Loop,
+           :loop, Loop.by_ref,
            :type, :handle_type,
            :handle_queue, [:pointer, 2],
            :flags, :int,
-           :next_closing, Handle,
+           :next_closing, Handle.by_ref,
            :filename, :string,
            :cb, :fs_event_cb,
            :event_watcher, Io.by_value,
@@ -53,7 +53,7 @@ module UV
            :realpath_len, :int,
            :cf_flags, :int,
            :cf_event, :pointer,
-           :cf_cb, Async,
+           :cf_cb, Async.by_ref,
            :cf_member, [:pointer, 2],
            :cf_reserved, :uint,
            :cf_mutex, :char
