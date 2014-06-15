@@ -8,7 +8,7 @@ require 'pry'
 desc "Compile libuv from submodule"
 task :libuv do
   Dir.chdir './libuv' do
-    # sh 'sh autogen.sh'
+    sh 'sh autogen.sh'
     sh './configure --enable-shared --prefix=%s/build' % __dir__
     sh 'make'
     # sh 'make check'

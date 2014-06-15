@@ -214,7 +214,7 @@ module UV
   # @return [Stream]
   # @scope class
   #
-  callback :read_cb, [:long, Buf.by_value], Stream.by_ref
+  callback :read_cb, [Stream.by_ref, :long, Buf.by_value], :void
 
   # Just like the uv_read_cb except that if the pending parameter is true
   # then you can use uv_accept() to pull the new handle into the process.
@@ -227,7 +227,7 @@ module UV
   # @return [Pipe]
   # @scope class
   #
-  callback :read2_cb, [:long, Buf.by_value, :handle_type], Pipe.by_ref
+  callback :read2_cb, [Pipe.by_ref, :long, Buf.by_value, :handle_type], :void
 
   # (Not documented)
   #
@@ -236,7 +236,7 @@ module UV
   # @return [Write]
   # @scope class
   #
-  callback :write_cb, [:int], Write.by_ref
+  callback :write_cb, [Write.by_ref, :int], :void
 
   # (Not documented)
   #
@@ -245,7 +245,7 @@ module UV
   # @return [Connect]
   # @scope class
   #
-  callback :connect_cb, [Connect.by_ref, :int], Connect.by_ref
+  callback :connect_cb, [Connect.by_ref, :int], :void
 
   # (Not documented)
   #
