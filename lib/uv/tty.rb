@@ -85,7 +85,7 @@ module UV
            :delayed_error, :int,
            :accepted_fd, :int,
            :select, :pointer,
-           :orig_termios, :char,
+           # :orig_termios, :termios,
            :mode, :int
   end
 

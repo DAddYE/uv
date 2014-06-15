@@ -1,8 +1,11 @@
 require 'ffi'
+
 require 'uv/enums'
+require 'uv/sockaddr_in'
 
 module UV
   extend FFI::Library
+
   ffi_lib File.join(__dir__, "../ext/build/lib/libuv.#{FFI::Platform::LIBSUFFIX}")
 
   autoload :Io, 'uv/io'
@@ -52,6 +55,7 @@ module UV
   autoload :Timers, 'uv/timers'
   autoload :Loop, 'uv/loop'
 
+  # Make some alias so we can parse without circular dependencies problems.
   typedef :pointer, :io_cb
   typedef :pointer, :close_cb
   typedef :pointer, :async_cb
@@ -74,6 +78,14 @@ module UV
   typedef :pointer, :fs_event_cb
   typedef :pointer, :udp_recv_cb
   typedef :pointer, :udp_send_cb
+
+  typedef :pointer, :mutex
+  typedef :pointer, :wq_mutex
+  typedef :pointer, :cf_mutex
+
+  typedef SockaddrIn.by_ref, :sockaddr_in
+  typedef SockaddrIn6.by_ref, :sockaddr_in6
+
 
   # (Not documented)
   #
@@ -98,11 +110,11 @@ module UV
   # (Not documented)
   #
   # @method `callback_once`(pthread_once)
-  # @param [unknown] pthread_once
-  # @return [unknown]
+  # @param [:pointer] pthread_once
+  # @return [:pointer]
   # @scope class
   #
-  callback :once, [:char], :char
+  callback :once, [:pointer], :pointer
 
   # (Not documented)
   #
@@ -116,20 +128,20 @@ module UV
   # (Not documented)
   #
   # @method `callback_mutex`(pthread_mutex)
-  # @param [unknown] pthread_mutex
-  # @return [unknown]
+  # @param [mutex] pthread_mutex
+  # @return [mutex]
   # @scope class
   #
-  callback :mutex, [:char], :char
+  callback :mutex_cb, [:pointer], :pointer
 
   # (Not documented)
   #
   # @method `callback_rwlock`(pthread_rwlock)
-  # @param [unknown] pthread_rwlock
-  # @return [unknown]
+  # @param [pthread_rwlock] pthread_rwlock
+  # @return [pthread_rwlock]
   # @scope class
   #
-  callback :rwlock, [:char], :char
+  callback :rwlock, [:pointer], :pointer
 
   # (Not documented)
   #
@@ -143,11 +155,11 @@ module UV
   # (Not documented)
   #
   # @method `callback_cond`(pthread_cond)
-  # @param [unknown] pthread_cond
-  # @return [unknown]
+  # @param [pthread_cond] pthread_cond
+  # @return [pthread_cond]
   # @scope class
   #
-  callback :cond, [:char], :char
+  callback :cond, [:pointer], :pointer
 
   # Platform-specific definitions for uv_spawn support.
   #
@@ -233,7 +245,7 @@ module UV
   # @return [Connect]
   # @scope class
   #
-  callback :connect_cb, [:int], Connect.by_ref
+  callback :connect_cb, [Connect.by_ref, :int], Connect.by_ref
 
   # (Not documented)
   #
@@ -506,7 +518,7 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :run, :uv_run, [Loop.by_ref, :run_mode], :int
+  attach_function :run, :uv_run, [Loop.by_ref, :run_mode], :int, blocking: true
 
   # This function will stop the event loop by forcing uv_run to end
   # as soon as possible, but not sooner than the next loop iteration.
@@ -980,23 +992,23 @@ module UV
 
   # (Not documented)
   #
-  # @method tcp_bind(handle, unknown)
+  # @method tcp_bind(handle, sockaddr_in)
   # @param [Tcp] handle
-  # @param [unknown] unknown
+  # @param [sockaddr_in] sockaddr_in
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_bind, :uv_tcp_bind, [Tcp.by_ref, :char], :int
+  attach_function :tcp_bind, :uv_tcp_bind, [Tcp.by_ref, :sockaddr_in], :int
 
   # (Not documented)
   #
-  # @method tcp_bind6(handle, unknown)
+  # @method tcp_bind6(handle, sockaddr_in6)
   # @param [Tcp] handle
-  # @param [unknown] unknown
+  # @param [sockaddr_in6] sockaddr_in6
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_bind6, :uv_tcp_bind6, [Tcp.by_ref, :char], :int
+  attach_function :tcp_bind6, :uv_tcp_bind6, [Tcp.by_ref, :sockaddr_in6], :int
 
   # (Not documented)
   #
@@ -1028,24 +1040,24 @@ module UV
   # @method tcp_connect(req, handle, address, cb)
   # @param [Connect] req
   # @param [Tcp] handle
-  # @param [unknown] address
+  # @param [sockaddr_in] address
   # @param [Proc(callback_connect_cb)] cb
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_connect, :uv_tcp_connect, [Connect.by_ref, Tcp.by_ref, :char, :connect_cb], :int
+  attach_function :tcp_connect, :uv_tcp_connect, [Connect.by_ref, Tcp.by_ref, SockaddrIn.by_value, :connect_cb], :int
 
   # (Not documented)
   #
   # @method tcp_connect6(req, handle, address, cb)
   # @param [Connect] req
   # @param [Tcp] handle
-  # @param [unknown] address
+  # @param [sockaddr_in6] address
   # @param [Proc(callback_connect_cb)] cb
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_connect6, :uv_tcp_connect6, [Connect.by_ref, Tcp.by_ref, :char, :connect_cb], :int
+  attach_function :tcp_connect6, :uv_tcp_connect6, [Connect.by_ref, Tcp.by_ref, :sockaddr_in6, :connect_cb], :int
 
   # Initialize a new UDP handle. The actual socket is created lazily.
   # Returns 0 on success.
@@ -1086,12 +1098,12 @@ module UV
   #
   # @method udp_bind(handle, addr, flags)
   # @param [Udp] handle
-  # @param [unknown] addr
+  # @param [sockaddr_in] addr
   # @param [Integer] flags
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_bind, :uv_udp_bind, [Udp.by_ref, :char, :uint], :int
+  attach_function :udp_bind, :uv_udp_bind, [Udp.by_ref, :sockaddr_in, :uint], :int
 
   # Bind to a IPv6 address and port.
   #
@@ -1105,12 +1117,12 @@ module UV
   #
   # @method udp_bind6(handle, addr, flags)
   # @param [Udp] handle
-  # @param [unknown] addr
+  # @param [sockaddr_in6] addr
   # @param [Integer] flags
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_bind6, :uv_udp_bind6, [Udp.by_ref, :char, :uint], :int
+  attach_function :udp_bind6, :uv_udp_bind6, [Udp.by_ref, :sockaddr_in6, :uint], :int
 
   # (Not documented)
   #
@@ -1238,12 +1250,12 @@ module UV
   # @param [Udp] handle
   # @param [Array<unknown>] bufs
   # @param [Integer] bufcnt
-  # @param [unknown] addr
+  # @param [sockaddr_in] addr
   # @param [Proc(callback_udp_send_cb)] send_cb
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_send, :uv_udp_send, [UdpSend.by_ref, Udp.by_ref, :pointer, :int, :char, :udp_send_cb], :int
+  attach_function :udp_send, :uv_udp_send, [UdpSend.by_ref, Udp.by_ref, :pointer, :int, :sockaddr_in, :udp_send_cb], :int
 
   # Send data. If the socket has not previously been bound with `uv_udp_bind6`,
   # it is bound to ::0 (the "all interfaces" address) and a random port number.
@@ -1264,12 +1276,12 @@ module UV
   # @param [Udp] handle
   # @param [Array<unknown>] bufs
   # @param [Integer] bufcnt
-  # @param [unknown] addr
+  # @param [sockaddr_in6] addr
   # @param [Proc(callback_udp_send_cb)] send_cb
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_send6, :uv_udp_send6, [UdpSend.by_ref, Udp.by_ref, :pointer, :int, :char, :udp_send_cb], :int
+  attach_function :udp_send6, :uv_udp_send6, [UdpSend.by_ref, Udp.by_ref, :pointer, :int, :sockaddr_in6, :udp_send_cb], :int
 
   # Receive data. If the socket has not previously been bound with `uv_udp_bind`
   # or `uv_udp_bind6`, it is bound to 0.0.0.0 (the "all interfaces" address)
@@ -2299,20 +2311,20 @@ module UV
   # @method ip4_addr(ip, port)
   # @param [String] ip
   # @param [Integer] port
-  # @return [unknown]
+  # @return [sockaddr_in]
   # @scope class
   #
-  attach_function :ip4_addr, :uv_ip4_addr, [:string, :int], :char
+  attach_function :ip4_addr, :uv_ip4_addr, [:string, :int], SockaddrIn.by_value
 
   # (Not documented)
   #
   # @method ip6_addr(ip, port)
   # @param [String] ip
   # @param [Integer] port
-  # @return [unknown]
+  # @return [sockaddr_in6]
   # @scope class
   #
-  attach_function :ip6_addr, :uv_ip6_addr, [:string, :int], :char
+  attach_function :ip6_addr, :uv_ip6_addr, [:string, :int], SockaddrIn.by_value
 
   # Convert binary addresses to strings
   #

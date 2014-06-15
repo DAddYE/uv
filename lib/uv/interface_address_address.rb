@@ -7,8 +7,8 @@ module UV
   # :address6 ::
   #   (unknown)
   class InterfaceAddressAddress < FFI::Union
-    layout :address4, :char,
-           :address6, :char
+    layout :address4, :sockaddr_in,
+           :address6, :sockaddr_in6
   end
 
 end

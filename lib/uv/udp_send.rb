@@ -46,7 +46,7 @@ module UV
            :handle, Udp.by_ref,
            :cb, :udp_send_cb,
            :queue, [:pointer, 2],
-           :addr, :char,
+           :addr, :sockaddr_in,
            :bufcnt, :int,
            :bufs, Buf.by_ref,
            :status, :long,

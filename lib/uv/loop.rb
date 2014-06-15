@@ -94,7 +94,7 @@ module UV
            :nwatchers, :uint,
            :nfds, :uint,
            :wq, [:pointer, 2],
-           :wq_mutex, :char,
+           :wq_mutex, :wq_mutex,
            :wq_async, Async.by_value,
            :closing_handles, Handle.by_ref,
            :process_handles, [[:pointer, 2], 1],
@@ -113,7 +113,7 @@ module UV
            :cf_thread, :pointer,
            :cf_reserved, :pointer,
            :cf_state, :pointer,
-           :cf_mutex, :char,
+           :cf_mutex, :cf_mutex,
            :cf_sem, :uint,
            :cf_signals, [:pointer, 2]
   end

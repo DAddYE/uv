@@ -2,6 +2,7 @@ $:.push '/usr/src/daddye/ffi-gen/lib'
 require 'ffi/gen'
 require 'ffi'
 require 'rake/clean'
+require 'pry'
 
 
 desc "Compile libuv from submodule"
@@ -19,16 +20,17 @@ CLOBBER.include("ext/build/libuv")
 
 task :generate do
   FFI::Gen.generate(
-    module_name: "UV",
-    ffi_lib:     'File.join(__dir__, "../ext/build/lib/libuv.#{FFI::Platform::LIBSUFFIX}")',
-    headers:     ["./build/include/uv-errno.h",
-                  "./build/include/uv-unix.h",
-                  "./build/include/uv-darwin.h",
-                  "./build/include/uv.h"],
-    prefixes:    ["uv_"],
-    suffixes:    ["_s", "_t"],
+    module_name:  "UV",
+    ffi_lib:      'File.join(__dir__, "../ext/build/lib/libuv.#{FFI::Platform::LIBSUFFIX}")',
+    headers:      ["./build/include/uv-errno.h",
+                   "./build/include/uv-unix.h",
+                   "./build/include/uv-darwin.h",
+                   "./build/include/uv.h"],
+    prefixes:     ["uv_"],
+    suffixes:     ["_s", "_t"],
     require_path: 'uv',
-    output:      File.join(__dir__, '../lib/uv.rb')
+    output:       File.join(__dir__, '../lib/uv.rb'),
+    cflags:       `llvm-config --cflags`.split(" "),
   )
 end
 

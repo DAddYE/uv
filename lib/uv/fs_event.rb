@@ -56,7 +56,7 @@ module UV
            :cf_cb, Async.by_ref,
            :cf_member, [:pointer, 2],
            :cf_reserved, :uint,
-           :cf_mutex, :char
+           :cf_mutex, :cf_mutex
   end
 
 end

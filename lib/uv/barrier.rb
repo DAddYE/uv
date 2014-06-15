@@ -34,7 +34,7 @@ module UV
     include BarrierWrappers
     layout :n, :uint,
            :count, :uint,
-           :mutex, :char,
+           :mutex, :mutex,
            :turnstile1, :uint,
            :turnstile2, :uint
   end
