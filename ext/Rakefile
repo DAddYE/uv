@@ -1,0 +1,35 @@
+$:.push '/usr/src/daddye/ffi-gen/lib'
+require 'ffi/gen'
+require 'ffi'
+require 'rake/clean'
+
+
+desc "Compile libuv from submodule"
+task :libuv do
+  Dir.chdir './libuv' do
+    # sh 'sh autogen.sh'
+    sh './configure --enable-shared --prefix=%s/build' % __dir__
+    sh 'make'
+    # sh 'make check'
+    sh 'make install'
+  end
+end
+
+CLOBBER.include("ext/build/libuv")
+
+task :generate do
+  FFI::Gen.generate(
+    module_name: "UV",
+    ffi_lib:     'File.join(__dir__, "../ext/build/lib/libuv.#{FFI::Platform::LIBSUFFIX}")',
+    headers:     ["./build/include/uv-errno.h",
+                  "./build/include/uv-unix.h",
+                  "./build/include/uv-darwin.h",
+                  "./build/include/uv.h"],
+    prefixes:    ["uv_"],
+    suffixes:    ["_s", "_t"],
+    require_path: 'uv',
+    output:      File.join(__dir__, '../lib/uv.rb')
+  )
+end
+
+task :default => :libuv
