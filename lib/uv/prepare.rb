@@ -5,20 +5,20 @@ module UV
   # iteration, just before the system blocks to wait for completed i/o.
   #
   # ## Fields:
-  # :close_cb ::
-  #   (Proc(callback_close_cb))
   # :data ::
   #   (FFI::Pointer(*Void))
   # :loop ::
   #   (Loop)
   # :type ::
   #   (Symbol from `enum_handle_type`)
+  # :close_cb ::
+  #   (Proc(callback_close_cb))
   # :handle_queue ::
   #   (Array<FFI::Pointer(*Void)>)
-  # :flags ::
-  #   (Integer)
   # :next_closing ::
   #   (Handle)
+  # :flags ::
+  #   (Integer)
   # :prepare_cb ::
   #   (Proc(callback_prepare_cb))
   # :queue ::
@@ -38,13 +38,13 @@ module UV
 
   class Prepare < FFI::Struct
     include PrepareWrappers
-    layout :close_cb, :close_cb,
-           :data, :pointer,
+    layout :data, :pointer,
            :loop, Loop.by_ref,
            :type, :handle_type,
+           :close_cb, :close_cb,
            :handle_queue, [:pointer, 2],
-           :flags, :int,
            :next_closing, Handle.by_ref,
+           :flags, :uint,
            :prepare_cb, :prepare_cb,
            :queue, [:pointer, 2]
   end

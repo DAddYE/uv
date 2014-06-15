@@ -32,6 +32,8 @@ module UV
   #   (unknown)
   # :wq_async ::
   #   (Async)
+  # :cloexec_lock ::
+  #   (unknown)
   # :closing_handles ::
   #   (Handle)
   # :process_handles ::
@@ -46,8 +48,10 @@ module UV
   #   (Array<FFI::Pointer(*Void)>)
   # :async_watcher ::
   #   (Async)
-  # :timer_handles ::
-  #   (Timers)
+  # :timer_heap ::
+  #   (LoopTimerHeap)
+  # :timer_counter ::
+  #   (Integer)
   # :time ::
   #   (Integer)
   # :signal_pipefd ::
@@ -57,8 +61,6 @@ module UV
   # :child_watcher ::
   #   (Signal)
   # :emfile_fd ::
-  #   (Integer)
-  # :timer_counter ::
   #   (Integer)
   # :cf_thread ::
   #   (FFI::Pointer(Thread))
@@ -73,9 +75,24 @@ module UV
   # :cf_signals ::
   #   (Array<FFI::Pointer(*Void)>)
   module LoopWrappers
+    # @return [Integer]
+    def init()
+      UV.loop_init(self)
+    end
+
+    # @return [Integer]
+    def close()
+      UV.loop_close(self)
+    end
+
     # @return [nil]
     def delete()
       UV.loop_delete(self)
+    end
+
+    # @return [Integer]
+    def alive()
+      UV.loop_alive(self)
     end
   end
 
@@ -94,8 +111,9 @@ module UV
            :nwatchers, :uint,
            :nfds, :uint,
            :wq, [:pointer, 2],
-           :wq_mutex, :wq_mutex,
+           :wq_mutex, :unknown,
            :wq_async, Async.by_value,
+           :cloexec_lock, :unknown,
            :closing_handles, Handle.by_ref,
            :process_handles, [[:pointer, 2], 1],
            :prepare_handles, [:pointer, 2],
@@ -103,17 +121,17 @@ module UV
            :idle_handles, [:pointer, 2],
            :async_handles, [:pointer, 2],
            :async_watcher, Async.by_value,
-           :timer_handles, Timers.by_value,
+           :timer_heap, LoopTimerHeap.by_value,
+           :timer_counter, :ulong_long,
            :time, :ulong_long,
            :signal_pipefd, [:int, 2],
            :signal_io_watcher, Io.by_value,
            :child_watcher, Signal.by_value,
            :emfile_fd, :int,
-           :timer_counter, :ulong_long,
            :cf_thread, :pointer,
            :cf_reserved, :pointer,
            :cf_state, :pointer,
-           :cf_mutex, :cf_mutex,
+           :cf_mutex, :unknown,
            :cf_sem, :uint,
            :cf_signals, [:pointer, 2]
   end

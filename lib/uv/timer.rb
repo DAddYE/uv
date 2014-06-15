@@ -4,24 +4,24 @@ module UV
   # Used to get woken up at a specified time in the future.
   #
   # ## Fields:
-  # :close_cb ::
-  #   (Proc(callback_close_cb))
   # :data ::
   #   (FFI::Pointer(*Void))
   # :loop ::
   #   (Loop)
   # :type ::
   #   (Symbol from `enum_handle_type`)
+  # :close_cb ::
+  #   (Proc(callback_close_cb))
   # :handle_queue ::
   #   (Array<FFI::Pointer(*Void)>)
-  # :flags ::
-  #   (Integer)
   # :next_closing ::
   #   (Handle)
-  # :tree_entry ::
-  #   (TimerTreeEntry)
+  # :flags ::
+  #   (Integer)
   # :timer_cb ::
   #   (Proc(callback_timer_cb))
+  # :heap_node ::
+  #   (Array<FFI::Pointer(*Void)>)
   # :timeout ::
   #   (Integer)
   # :repeat ::
@@ -61,15 +61,15 @@ module UV
 
   class Timer < FFI::Struct
     include TimerWrappers
-    layout :close_cb, :close_cb,
-           :data, :pointer,
+    layout :data, :pointer,
            :loop, Loop.by_ref,
            :type, :handle_type,
+           :close_cb, :close_cb,
            :handle_queue, [:pointer, 2],
-           :flags, :int,
            :next_closing, Handle.by_ref,
-           :tree_entry, TimerTreeEntry.by_value,
+           :flags, :uint,
            :timer_cb, :timer_cb,
+           :heap_node, [:pointer, 3],
            :timeout, :ulong_long,
            :repeat, :ulong_long,
            :start_id, :ulong_long

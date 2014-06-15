@@ -7,20 +7,20 @@ module UV
   # in turn.
   #
   # ## Fields:
-  # :close_cb ::
-  #   (Proc(callback_close_cb))
   # :data ::
   #   (FFI::Pointer(*Void))
   # :loop ::
   #   (Loop)
   # :type ::
   #   (Symbol from `enum_handle_type`)
+  # :close_cb ::
+  #   (Proc(callback_close_cb))
   # :handle_queue ::
   #   (Array<FFI::Pointer(*Void)>)
-  # :flags ::
-  #   (Integer)
   # :next_closing ::
   #   (Handle)
+  # :flags ::
+  #   (Integer)
   # :idle_cb ::
   #   (Proc(callback_idle_cb))
   # :queue ::
@@ -40,13 +40,13 @@ module UV
 
   class Idle < FFI::Struct
     include IdleWrappers
-    layout :close_cb, :close_cb,
-           :data, :pointer,
+    layout :data, :pointer,
            :loop, Loop.by_ref,
            :type, :handle_type,
+           :close_cb, :close_cb,
            :handle_queue, [:pointer, 2],
-           :flags, :int,
            :next_closing, Handle.by_ref,
+           :flags, :uint,
            :idle_cb, :idle_cb,
            :queue, [:pointer, 2]
   end

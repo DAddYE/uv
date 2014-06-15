@@ -2,20 +2,20 @@ module UV
   # uv_udp_t is a subclass of uv_handle_t
   #
   # ## Fields:
-  # :close_cb ::
-  #   (Proc(callback_close_cb))
   # :data ::
   #   (FFI::Pointer(*Void))
   # :loop ::
   #   (Loop)
   # :type ::
   #   (Symbol from `enum_handle_type`)
+  # :close_cb ::
+  #   (Proc(callback_close_cb))
   # :handle_queue ::
   #   (Array<FFI::Pointer(*Void)>)
-  # :flags ::
-  #   (Integer)
   # :next_closing ::
   #   (Handle)
+  # :flags ::
+  #   (Integer)
   # :alloc_cb ::
   #   (Proc(callback_alloc_cb))
   # :recv_cb ::
@@ -33,18 +33,11 @@ module UV
       UV.udp_open(self, sock)
     end
 
-    # @param [unknown] addr
+    # @param [FFI::Pointer(*Sockaddr)] addr
     # @param [Integer] flags
     # @return [Integer]
     def bind(addr, flags)
       UV.udp_bind(self, addr, flags)
-    end
-
-    # @param [unknown] addr
-    # @param [Integer] flags
-    # @return [Integer]
-    def bind6(addr, flags)
-      UV.udp_bind6(self, addr, flags)
     end
 
     # @param [FFI::Pointer(*Sockaddr)] name
@@ -74,6 +67,12 @@ module UV
       UV.udp_set_multicast_ttl(self, ttl)
     end
 
+    # @param [String] interface_addr
+    # @return [Integer]
+    def set_multicast_interface(interface_addr)
+      UV.udp_set_multicast_interface(self, interface_addr)
+    end
+
     # @param [Integer] on
     # @return [Integer]
     def set_broadcast(on)
@@ -101,13 +100,13 @@ module UV
 
   class Udp < FFI::Struct
     include UdpWrappers
-    layout :close_cb, :close_cb,
-           :data, :pointer,
+    layout :data, :pointer,
            :loop, Loop.by_ref,
            :type, :handle_type,
+           :close_cb, :close_cb,
            :handle_queue, [:pointer, 2],
-           :flags, :int,
            :next_closing, Handle.by_ref,
+           :flags, :uint,
            :alloc_cb, :alloc_cb,
            :recv_cb, :udp_recv_cb,
            :io_watcher, Io.by_value,

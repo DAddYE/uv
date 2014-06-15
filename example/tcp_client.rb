@@ -36,7 +36,9 @@ end
 
 # Fiber methods
 def connect(client)
-  addr = UV.ip4_addr('127.0.0.1', 4150)
+  addr = UV::SockaddrIn.new
+  err = UV.ip4_addr('127.0.0.1', 4150, addr)
+  refute_error(err)
   err = UV.tcp_connect(UV::Connect.new, client, addr, callback(:connect_cb))
   refute_error(err)
 

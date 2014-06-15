@@ -16,7 +16,7 @@ module UV
   #   (Array<FFI::Pointer(*Void)>)
   # :addr ::
   #   (unknown)
-  # :bufcnt ::
+  # :nbufs ::
   #   (Integer)
   # :bufs ::
   #   (Buf)
@@ -29,12 +29,12 @@ module UV
   module UdpSendWrappers
     # @param [Udp] handle
     # @param [Array<unknown>] bufs
-    # @param [Integer] bufcnt
-    # @param [unknown] addr
+    # @param [Integer] nbufs
+    # @param [FFI::Pointer(*Sockaddr)] addr
     # @param [Proc(callback_udp_send_cb)] send_cb
     # @return [Integer]
-    def udp_send(handle, bufs, bufcnt, addr, send_cb)
-      UV.udp_send(self, handle, bufs, bufcnt, addr, send_cb)
+    def udp_send(handle, bufs, nbufs, addr, send_cb)
+      UV.udp_send(self, handle, bufs, nbufs, addr, send_cb)
     end
   end
 
@@ -46,8 +46,8 @@ module UV
            :handle, Udp.by_ref,
            :cb, :udp_send_cb,
            :queue, [:pointer, 2],
-           :addr, :sockaddr_in,
-           :bufcnt, :int,
+           :addr, :unknown,
+           :nbufs, :uint,
            :bufs, Buf.by_ref,
            :status, :long,
            :send_cb, :udp_send_cb,

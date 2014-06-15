@@ -1,11 +1,9 @@
 require 'ffi'
-
 require 'uv/enums'
 require 'uv/sockaddr_in'
 
 module UV
   extend FFI::Library
-
   ffi_lib File.join(__dir__, "../ext/build/lib/libuv.#{FFI::Platform::LIBSUFFIX}")
 
   autoload :Io, 'uv/io'
@@ -32,7 +30,6 @@ module UV
   autoload :Check, 'uv/check'
   autoload :Idle, 'uv/idle'
   autoload :Async, 'uv/async'
-  autoload :TimerTreeEntry, 'uv/timer_tree_entry'
   autoload :Timer, 'uv/timer'
   autoload :Getaddrinfo, 'uv/getaddrinfo'
   autoload :StdioContainerData, 'uv/stdio_container_data'
@@ -45,6 +42,8 @@ module UV
   autoload :InterfaceAddressAddress, 'uv/interface_address_address'
   autoload :InterfaceAddressNetmask, 'uv/interface_address_netmask'
   autoload :InterfaceAddress, 'uv/interface_address'
+  autoload :Timeval, 'uv/timeval'
+  autoload :Rusage, 'uv/rusage'
   autoload :Fs, 'uv/fs'
   autoload :FsEvent, 'uv/fs_event'
   autoload :FsPoll, 'uv/fs_poll'
@@ -52,7 +51,7 @@ module UV
   autoload :Signal, 'uv/signal'
   autoload :AnyHandle, 'uv/any_handle'
   autoload :AnyReq, 'uv/any_req'
-  autoload :Timers, 'uv/timers'
+  autoload :LoopTimerHeap, 'uv/loop_timer_heap'
   autoload :Loop, 'uv/loop'
 
   # Make some alias so we can parse without circular dependencies problems.
@@ -79,9 +78,7 @@ module UV
   typedef :pointer, :udp_recv_cb
   typedef :pointer, :udp_send_cb
 
-  typedef :pointer, :mutex
-  typedef :pointer, :wq_mutex
-  typedef :pointer, :cf_mutex
+  typedef :pointer, :unknown
 
   typedef SockaddrIn.by_ref, :sockaddr_in
   typedef SockaddrIn6.by_ref, :sockaddr_in6
@@ -89,97 +86,27 @@ module UV
 
   # (Not documented)
   #
-  # @method `callback_io_cb`(w, events)
+  # @method `callback_io_cb`(loop, w, events)
+  # @param [Loop] loop
   # @param [Io] w
   # @param [Integer] events
-  # @return [Loop]
+  # @return [nil]
   # @scope class
   #
-  callback :io_cb, [Io.by_ref, :uint], Loop.by_ref
+  callback :io_cb, [Loop.by_ref, Io.by_ref, :uint], :void
 
   # (Not documented)
   #
-  # @method `callback_async_cb`(w, nevents)
+  # @method `callback_async_cb`(loop, w, nevents)
+  # @param [Loop] loop
   # @param [Async] w
   # @param [Integer] nevents
-  # @return [Loop]
+  # @return [nil]
   # @scope class
   #
-  callback :async_cb, [Async.by_ref, :uint], Loop.by_ref
+  callback :async_cb, [Loop.by_ref, Async.by_ref, :uint], :void
 
-  # (Not documented)
-  #
-  # @method `callback_once`(pthread_once)
-  # @param [:pointer] pthread_once
-  # @return [:pointer]
-  # @scope class
-  #
-  callback :once, [:pointer], :pointer
-
-  # (Not documented)
-  #
-  # @method `callback_thread`(pthread)
-  # @param [FFI::Pointer(Pthread)] pthread
-  # @return [FFI::Pointer(Pthread)]
-  # @scope class
-  #
-  callback :thread, [:pointer], :pointer
-
-  # (Not documented)
-  #
-  # @method `callback_mutex`(pthread_mutex)
-  # @param [mutex] pthread_mutex
-  # @return [mutex]
-  # @scope class
-  #
-  callback :mutex_cb, [:pointer], :pointer
-
-  # (Not documented)
-  #
-  # @method `callback_rwlock`(pthread_rwlock)
-  # @param [pthread_rwlock] pthread_rwlock
-  # @return [pthread_rwlock]
-  # @scope class
-  #
-  callback :rwlock, [:pointer], :pointer
-
-  # (Not documented)
-  #
-  # @method `callback_sem`(semaphore)
-  # @param [Integer] semaphore
-  # @return [Integer]
-  # @scope class
-  #
-  callback :sem, [:uint], :uint
-
-  # (Not documented)
-  #
-  # @method `callback_cond`(pthread_cond)
-  # @param [pthread_cond] pthread_cond
-  # @return [pthread_cond]
-  # @scope class
-  #
-  callback :cond, [:pointer], :pointer
-
-  # Platform-specific definitions for uv_spawn support.
-  #
-  # @method `callback_gid`(gid)
-  # @param [Integer] gid
-  # @return [Integer]
-  # @scope class
-  #
-  callback :gid, [:uint], :uint
-
-  # (Not documented)
-  #
-  # @method `callback_uid`(uid)
-  # @param [Integer] uid
-  # @return [Integer]
-  # @scope class
-  #
-  callback :uid, [:uint], :uint
-
-  # Should return a buffer that libuv can use to read data into.
+  # Should prepare a buffer that libuv can use to read data into.
   #
   # `suggested_size` is a hint. Returning a buffer that is smaller is perfectly
   # okay as long as `buf.len > 0`.
@@ -190,13 +117,14 @@ module UV
   # Note that returning a zero-length buffer does not stop the handle, call
   # uv_read_stop() or uv_udp_recv_stop() for that.
   #
-  # @method `callback_alloc_cb`(handle, suggested_size)
+  # @method `callback_alloc_cb`(handle, suggested_size, buf)
   # @param [Handle] handle
   # @param [Integer] suggested_size
-  # @return [Buf]
+  # @param [Buf] buf
+  # @return [nil]
   # @scope class
   #
-  callback :alloc_cb, [Handle.by_ref, :ulong], Buf.by_value
+  callback :alloc_cb, [Handle.by_ref, :ulong, Buf.by_ref], :void
 
   # `nread` is > 0 if there is data available, 0 if libuv is done reading for
   # now, or < 0 on error.
@@ -205,229 +133,230 @@ module UV
   # Trying to read from the stream again is undefined.
   #
   # The callee is responsible for freeing the buffer, libuv does not reuse it.
-  # The buffer may be a null buffer (where buf.base=NULL and buf.len=0) on EOF
-  # or error.
+  # The buffer may be a null buffer (where buf->base=NULL and buf->len=0) on
+  # EOF or error.
   #
-  # @method `callback_read_cb`(nread, buf)
+  # @method `callback_read_cb`(stream, nread, buf)
+  # @param [Stream] stream
   # @param [Integer] nread
   # @param [Buf] buf
-  # @return [Stream]
+  # @return [nil]
   # @scope class
   #
-  callback :read_cb, [Stream.by_ref, :long, Buf.by_value], :void
-
-  # Just like the uv_read_cb except that if the pending parameter is true
-  # then you can use uv_accept() to pull the new handle into the process.
-  # If no handle is pending then pending will be UV_UNKNOWN_HANDLE.
-  #
-  # @method `callback_read2_cb`(nread, buf, pending)
-  # @param [Integer] nread
-  # @param [Buf] buf
-  # @param [Symbol from `enum_handle_type`] pending
-  # @return [Pipe]
-  # @scope class
-  #
-  callback :read2_cb, [Pipe.by_ref, :long, Buf.by_value, :handle_type], :void
+  callback :read_cb, [Stream.by_ref, :long, Buf.by_ref], :void
 
   # (Not documented)
   #
-  # @method `callback_write_cb`(status)
+  # @method `callback_write_cb`(req, status)
+  # @param [Write] req
   # @param [Integer] status
-  # @return [Write]
+  # @return [nil]
   # @scope class
   #
   callback :write_cb, [Write.by_ref, :int], :void
 
   # (Not documented)
   #
-  # @method `callback_connect_cb`(status)
+  # @method `callback_connect_cb`(req, status)
+  # @param [Connect] req
   # @param [Integer] status
-  # @return [Connect]
+  # @return [nil]
   # @scope class
   #
   callback :connect_cb, [Connect.by_ref, :int], :void
 
   # (Not documented)
   #
-  # @method `callback_shutdown_cb`(status)
+  # @method `callback_shutdown_cb`(req, status)
+  # @param [Shutdown] req
   # @param [Integer] status
-  # @return [Shutdown]
+  # @return [nil]
   # @scope class
   #
-  callback :shutdown_cb, [:int], Shutdown.by_ref
+  callback :shutdown_cb, [Shutdown.by_ref, :int], :void
 
   # (Not documented)
   #
-  # @method `callback_connection_cb`(status)
+  # @method `callback_connection_cb`(server, status)
+  # @param [Stream] server
   # @param [Integer] status
-  # @return [Stream]
+  # @return [nil]
   # @scope class
   #
-  callback :connection_cb, [:int], Stream.by_ref
+  callback :connection_cb, [Stream.by_ref, :int], :void
 
   # (Not documented)
   #
   # @method `callback_close_cb`(handle)
   # @param [Handle] handle
-  # @return [Handle]
+  # @return [nil]
   # @scope class
   #
-  callback :close_cb, [Handle.by_ref], Handle.by_ref
+  callback :close_cb, [Handle.by_ref], :void
 
   # (Not documented)
   #
-  # @method `callback_poll_cb`(status, events)
+  # @method `callback_poll_cb`(handle, status, events)
+  # @param [Poll] handle
   # @param [Integer] status
   # @param [Integer] events
-  # @return [Poll]
+  # @return [nil]
   # @scope class
   #
-  callback :poll_cb, [:int, :int], Poll.by_ref
+  callback :poll_cb, [Poll.by_ref, :int, :int], :void
 
   # (Not documented)
   #
-  # @method `callback_timer_cb`(status)
-  # @param [Integer] status
-  # @return [Timer]
+  # @method `callback_timer_cb`(handle)
+  # @param [Timer] handle
+  # @return [nil]
   # @scope class
   #
-  callback :timer_cb, [:int], Timer.by_ref
-
-  # TODO: do these really need a status argument?
-  #
-  # @method `callback_async_cb`(status)
-  # @param [Integer] status
-  # @return [Async]
-  # @scope class
-  #
-  callback :async_cb, [:int], Async.by_ref
+  callback :timer_cb, [Timer.by_ref], :void
 
   # (Not documented)
   #
-  # @method `callback_prepare_cb`(status)
-  # @param [Integer] status
-  # @return [Prepare]
+  # @method `callback_async_cb`(handle)
+  # @param [Async] handle
+  # @return [nil]
   # @scope class
   #
-  callback :prepare_cb, [:int], Prepare.by_ref
+  callback :async_cb, [Async.by_ref], :void
 
   # (Not documented)
   #
-  # @method `callback_check_cb`(status)
-  # @param [Integer] status
-  # @return [Check]
+  # @method `callback_prepare_cb`(handle)
+  # @param [Prepare] handle
+  # @return [nil]
   # @scope class
   #
-  callback :check_cb, [:int], Check.by_ref
+  callback :prepare_cb, [Prepare.by_ref], :void
 
   # (Not documented)
   #
-  # @method `callback_idle_cb`(status)
-  # @param [Integer] status
-  # @return [Idle]
+  # @method `callback_check_cb`(handle)
+  # @param [Check] handle
+  # @return [nil]
   # @scope class
   #
-  callback :idle_cb, [:int], Idle.by_ref
+  callback :check_cb, [Check.by_ref], :void
 
   # (Not documented)
   #
-  # @method `callback_exit_cb`(exit_status, term_signal)
+  # @method `callback_idle_cb`(handle)
+  # @param [Idle] handle
+  # @return [nil]
+  # @scope class
+  #
+  callback :idle_cb, [Idle.by_ref], :void
+
+  # (Not documented)
+  #
+  # @method `callback_exit_cb`(, exit_status, term_signal)
+  # @param [Process]
   # @param [Integer] exit_status
   # @param [Integer] term_signal
-  # @return [Process]
+  # @return [nil]
   # @scope class
   #
-  callback :exit_cb, [:long_long, :int], Process.by_ref
+  callback :exit_cb, [Process.by_ref, :long_long, :int], :void
 
   # (Not documented)
   #
-  # @method `callback_walk_cb`(arg)
+  # @method `callback_walk_cb`(handle, arg)
+  # @param [Handle] handle
   # @param [FFI::Pointer(*Void)] arg
-  # @return [Handle]
+  # @return [nil]
   # @scope class
   #
-  callback :walk_cb, [:pointer], Handle.by_ref
+  callback :walk_cb, [Handle.by_ref, :pointer], :void
 
   # (Not documented)
   #
   # @method `callback_fs_cb`(req)
   # @param [Fs] req
-  # @return [Fs]
+  # @return [nil]
   # @scope class
   #
-  callback :fs_cb, [Fs.by_ref], Fs.by_ref
+  callback :fs_cb, [Fs.by_ref], :void
 
   # (Not documented)
   #
   # @method `callback_work_cb`(req)
   # @param [Work] req
-  # @return [Work]
+  # @return [nil]
   # @scope class
   #
-  callback :work_cb, [Work.by_ref], Work.by_ref
+  callback :work_cb, [Work.by_ref], :void
 
   # (Not documented)
   #
-  # @method `callback_after_work_cb`(status)
+  # @method `callback_after_work_cb`(req, status)
+  # @param [Work] req
   # @param [Integer] status
-  # @return [Work]
+  # @return [nil]
   # @scope class
   #
-  callback :after_work_cb, [:int], Work.by_ref
+  callback :after_work_cb, [Work.by_ref, :int], :void
 
   # (Not documented)
   #
-  # @method `callback_getaddrinfo_cb`(status, res)
+  # @method `callback_getaddrinfo_cb`(req, status, res)
+  # @param [Getaddrinfo] req
   # @param [Integer] status
   # @param [FFI::Pointer(*Addrinfo)] res
-  # @return [Getaddrinfo]
+  # @return [nil]
   # @scope class
   #
-  callback :getaddrinfo_cb, [:int, :pointer], Getaddrinfo.by_ref
+  callback :getaddrinfo_cb, [Getaddrinfo.by_ref, :int, :pointer], :void
 
   # This will be called repeatedly after the uv_fs_event_t is initialized.
   # If uv_fs_event_t was initialized with a directory the filename parameter
   # will be a relative path to a file contained in the directory.
   # The events parameter is an ORed mask of enum uv_fs_event elements.
   #
-  # @method `callback_fs_event_cb`(filename, events, status)
+  # @method `callback_fs_event_cb`(handle, filename, events, status)
+  # @param [FsEvent] handle
   # @param [String] filename
   # @param [Integer] events
   # @param [Integer] status
-  # @return [FsEvent]
+  # @return [nil]
   # @scope class
   #
-  callback :fs_event_cb, [:string, :int, :int], FsEvent.by_ref
+  callback :fs_event_cb, [FsEvent.by_ref, :string, :int, :int], :void
 
   # (Not documented)
   #
-  # @method `callback_fs_poll_cb`(status, prev, curr)
+  # @method `callback_fs_poll_cb`(handle, status, prev, curr)
+  # @param [FsPoll] handle
   # @param [Integer] status
   # @param [Stat] prev
   # @param [Stat] curr
-  # @return [FsPoll]
+  # @return [nil]
   # @scope class
   #
-  callback :fs_poll_cb, [:int, Stat.by_ref, Stat.by_ref], FsPoll.by_ref
+  callback :fs_poll_cb, [FsPoll.by_ref, :int, Stat.by_ref, Stat.by_ref], :void
 
   # (Not documented)
   #
-  # @method `callback_signal_cb`(signum)
+  # @method `callback_signal_cb`(handle, signum)
+  # @param [Signal] handle
   # @param [Integer] signum
-  # @return [Signal]
+  # @return [nil]
   # @scope class
   #
-  callback :signal_cb, [:int], Signal.by_ref
+  callback :signal_cb, [Signal.by_ref, :int], :void
 
-  # Called after a uv_udp_send() or uv_udp_send6(). status 0 indicates
+  # Called after uv_udp_send(). status 0 indicates
   # success otherwise error.
   #
-  # @method `callback_udp_send_cb`(status)
+  # @method `callback_udp_send_cb`(req, status)
+  # @param [UdpSend] req
   # @param [Integer] status
-  # @return [UdpSend]
+  # @return [nil]
   # @scope class
   #
-  callback :udp_send_cb, [:int], UdpSend.by_ref
+  callback :udp_send_cb, [UdpSend.by_ref, :int], :void
 
   # Callback that is invoked when a new UDP datagram is received.
   #
@@ -437,20 +366,21 @@ module UV
   #          discard or repurpose the read buffer.
   #          < 0 if a transmission error was detected.
   #  buf     uv_buf_t with the received data.
-  #  addr    struct sockaddr_in or struct sockaddr_in6.
-  #          Valid for the duration of the callback only.
+  #  addr    struct sockaddr* containing the address of the sender.
+  #          Can be NULL. Valid for the duration of the callback only.
   #  flags   One or more OR'ed UV_UDP_* constants.
   #          Right now only UV_UDP_PARTIAL is used.
   #
-  # @method `callback_udp_recv_cb`(nread, buf, addr, flags)
+  # @method `callback_udp_recv_cb`(handle, nread, buf, addr, flags)
+  # @param [Udp] handle
   # @param [Integer] nread
   # @param [Buf] buf
   # @param [FFI::Pointer(*Sockaddr)] addr
   # @param [Integer] flags
-  # @return [Udp]
+  # @return [nil]
   # @scope class
   #
-  callback :udp_recv_cb, [:long, Buf.by_value, :pointer, :uint], Udp.by_ref
+  callback :udp_recv_cb, [Udp.by_ref, :long, Buf.by_ref, :pointer, :uint], :void
 
   # Returns the libuv version packed into a single integer. 8 bits are used for
   # each component, with the patch number stored in the 8 least significant
@@ -471,28 +401,6 @@ module UV
   #
   attach_function :version_string, :uv_version_string, [], :string
 
-  # This function must be called before any other functions in libuv.
-  #
-  # All functions besides uv_run() are non-blocking.
-  #
-  # All callbacks in libuv are made asynchronously. That is they are never
-  # made by the function that takes them as a parameter.
-  #
-  # @method loop_new()
-  # @return [Loop]
-  # @scope class
-  #
-  attach_function :loop_new, :uv_loop_new, [], Loop.by_ref
-
-  # (Not documented)
-  #
-  # @method loop_delete(loop)
-  # @param [Loop] loop
-  # @return [nil]
-  # @scope class
-  #
-  attach_function :loop_delete, :uv_loop_delete, [Loop.by_ref], :void
-
   # Returns the default loop.
   #
   # @method default_loop()
@@ -500,6 +408,47 @@ module UV
   # @scope class
   #
   attach_function :default_loop, :uv_default_loop, [], Loop.by_ref
+
+  # Initializes a uv_loop_t structure.
+  #
+  # @method loop_init(loop)
+  # @param [Loop] loop
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :loop_init, :uv_loop_init, [Loop.by_ref], :int
+
+  # Closes all internal loop resources.  This function must only be called once
+  # the loop has finished it's execution or it will return UV_EBUSY.  After this
+  # function returns the user shall free the memory allocated for the loop.
+  #
+  # @method loop_close(loop)
+  # @param [Loop] loop
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :loop_close, :uv_loop_close, [Loop.by_ref], :int
+
+  # Allocates and initializes a new loop.
+  # NOTE: This function is DEPRECATED (to be removed after 0.12), users should
+  # allocate the loop manually and use uv_loop_init instead.
+  #
+  # @method loop_new()
+  # @return [Loop]
+  # @scope class
+  #
+  attach_function :loop_new, :uv_loop_new, [], Loop.by_ref
+
+  # Cleans up a loop once it has finished executio and frees its memory.
+  # NOTE: This function is DEPRECATED (to be removed after 0.12). Users should use
+  # uv_loop_close and free the memory manually instead.
+  #
+  # @method loop_delete(loop)
+  # @param [Loop] loop
+  # @return [nil]
+  # @scope class
+  #
+  attach_function :loop_delete, :uv_loop_delete, [Loop.by_ref], :void
 
   # This function runs the event loop. It will act differently depending on the
   # specified mode:
@@ -518,7 +467,17 @@ module UV
   # @return [Integer]
   # @scope class
   #
-  attach_function :run, :uv_run, [Loop.by_ref, :run_mode], :int, blocking: true
+  attach_function :run, :uv_run, [Loop.by_ref, :run_mode], :int
+
+  # This function checks whether the reference count, the number of active
+  # handles or requests left in the event loop, is non-zero.
+  #
+  # @method loop_alive(loop)
+  # @param [Loop] loop
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :loop_alive, :uv_loop_alive, [Loop.by_ref], :int
 
   # This function will stop the event loop by forcing uv_run to end
   # as soon as possible, but not sooner than the next loop iteration.
@@ -583,7 +542,7 @@ module UV
   # Don't make assumptions about the starting point, you will only get
   # disappointed.
   #
-  # Use uv_hrtime() if you need sub-milliseond granularity.
+  # Use uv_hrtime() if you need sub-millisecond granularity.
   #
   # @method now(loop)
   # @param [Loop] loop
@@ -676,8 +635,23 @@ module UV
   #
   attach_function :req_size, :uv_req_size, [:req_type], :ulong
 
-  # Returns 1 if the prepare/check/idle/timer handle has been started, 0
-  # otherwise. For other handle types this always returns 1.
+  # Returns non-zero if the handle is active, zero if it's inactive.
+  #
+  # What "active" means depends on the type of handle:
+  #
+  #  - A uv_async_t handle is always active and cannot be deactivated, except
+  #    by closing it with uv_close().
+  #
+  #  - A uv_pipe_t, uv_tcp_t, uv_udp_t, etc. handle - basically any handle that
+  #    deals with I/O - is active when it is doing something that involves I/O,
+  #    like reading, writing, connecting, accepting new connections, etc.
+  #
+  #  - A uv_check_t, uv_idle_t, uv_timer_t, etc. handle is active when it has
+  #    been started with a call to uv_check_start(), uv_idle_start(), etc.
+  #
+  #      Rule of thumb: if a handle of type uv_foo_t has a uv_foo_start()
+  #      function, then it's active from the moment that function is called.
+  #      Likewise, uv_foo_stop() deactivates the handle again.
   #
   # @method is_active(handle)
   # @param [Handle] handle
@@ -727,32 +701,6 @@ module UV
   # @scope class
   #
   attach_function :buf_init, :uv_buf_init, [:string, :uint], Buf.by_value
-
-  # Utility function. Copies up to `size` characters from `src` to `dst`
-  # and ensures that `dst` is properly NUL terminated unless `size` is zero.
-  #
-  # @method strlcpy(dst, src, size)
-  # @param [String] dst
-  # @param [String] src
-  # @param [Integer] size
-  # @return [Integer]
-  # @scope class
-  #
-  attach_function :strlcpy, :uv_strlcpy, [:string, :string, :ulong], :ulong
-
-  # Utility function. Appends `src` to `dst` and ensures that `dst` is
-  # properly NUL terminated unless `size` is zero or `dst` does not
-  # contain a NUL byte. `size` is the total length of `dst` so at most
-  # `size - strlen(dst) - 1` characters will be copied from `src`.
-  #
-  # @method strlcat(dst, src, size)
-  # @param [String] dst
-  # @param [String] src
-  # @param [Integer] size
-  # @return [Integer]
-  # @scope class
-  #
-  attach_function :strlcat, :uv_strlcat, [:string, :string, :ulong], :ulong
 
   # (Not documented)
   #
@@ -812,18 +760,6 @@ module UV
   #
   attach_function :read_stop, :uv_read_stop, [Stream.by_ref], :int
 
-  # Extended read methods for receiving handles over a pipe. The pipe must be
-  # initialized with ipc == 1.
-  #
-  # @method read2_start(stream, alloc_cb, read_cb)
-  # @param [Stream] stream
-  # @param [Proc(callback_alloc_cb)] alloc_cb
-  # @param [Proc(callback_read2_cb)] read_cb
-  # @return [Integer]
-  # @scope class
-  #
-  attach_function :read2_start, :uv_read2_start, [Stream.by_ref, :alloc_cb, :read2_cb], :int
-
   # Write data to stream. Buffers are written in order. Example:
   #
   #   uv_buf_t a() = {
@@ -843,16 +779,16 @@ module UV
   #   uv_write(&req1, stream, a, 2);
   #   uv_write(&req2, stream, b, 2);
   #
-  # @method write(req, handle, bufs, bufcnt, cb)
+  # @method write(req, handle, bufs, nbufs, cb)
   # @param [Write] req
   # @param [Stream] handle
   # @param [Array<unknown>] bufs
-  # @param [Integer] bufcnt
+  # @param [Integer] nbufs
   # @param [Proc(callback_write_cb)] cb
   # @return [Integer]
   # @scope class
   #
-  attach_function :write, :uv_write, [Write.by_ref, Stream.by_ref, :pointer, :int, :write_cb], :int
+  attach_function :write, :uv_write, [Write.by_ref, Stream.by_ref, :pointer, :uint, :write_cb], :int
 
   # Extended write function for sending handles over a pipe. The pipe must be
   # initialized with ipc == 1.
@@ -860,17 +796,32 @@ module UV
   # (listening or connected state).  Bound sockets or pipes will be assumed to
   # be servers.
   #
-  # @method write2(req, handle, bufs, bufcnt, send_handle, cb)
+  # @method write2(req, handle, bufs, nbufs, send_handle, cb)
   # @param [Write] req
   # @param [Stream] handle
   # @param [Array<unknown>] bufs
-  # @param [Integer] bufcnt
+  # @param [Integer] nbufs
   # @param [Stream] send_handle
   # @param [Proc(callback_write_cb)] cb
   # @return [Integer]
   # @scope class
   #
-  attach_function :write2, :uv_write2, [Write.by_ref, Stream.by_ref, :pointer, :int, Stream.by_ref, :write_cb], :int
+  attach_function :write2, :uv_write2, [Write.by_ref, Stream.by_ref, :pointer, :uint, Stream.by_ref, :write_cb], :int
+
+  # Same as `uv_write()`, but won't queue write request if it can't be completed
+  # immediately.
+  # Will return either:
+  # - >= 0: number of bytes written (can be less than the supplied buffer size)
+  # - < 0: negative error code
+  #
+  # @method try_write(handle, bufs, nbufs)
+  # @param [Stream] handle
+  # @param [Array<unknown>] bufs
+  # @param [Integer] nbufs
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :try_write, :uv_try_write, [Stream.by_ref, :pointer, :uint], :int
 
   # Used to determine whether a stream is readable or writable.
   #
@@ -900,11 +851,7 @@ module UV
   # Relying too much on this API is not recommended. It is likely to change
   # significantly in the future.
   #
-  # On windows this currently works only for uv_pipe_t instances. On unix it
-  # works for tcp, pipe and tty instances. Be aware that changing the blocking
-  # mode on unix sets or clears the O_NONBLOCK bit. If you are sharing a handle
-  # with another process, the other process is affected by the change too,
-  # which can lead to unexpected results.
+  # Currently this only works on Windows and only for uv_pipe_t handles.
   #
   # Also libuv currently makes no ordering guarantee when the blocking mode
   # is changed after write requests have already been submitted. Therefore it is
@@ -990,25 +937,23 @@ module UV
   #
   attach_function :tcp_simultaneous_accepts, :uv_tcp_simultaneous_accepts, [Tcp.by_ref, :int], :int
 
-  # (Not documented)
+  # Bind the handle to an address and port.  `addr` should point to an
+  # initialized struct sockaddr_in or struct sockaddr_in6.
   #
-  # @method tcp_bind(handle, sockaddr_in)
+  # When the port is already taken, you can expect to see an UV_EADDRINUSE
+  # error from either uv_tcp_bind(), uv_listen() or uv_tcp_connect().
+  #
+  # That is, a successful call to uv_tcp_bind() does not guarantee that
+  # the call to uv_listen() or uv_tcp_connect() will succeed as well.
+  #
+  # @method tcp_bind(handle, addr, flags)
   # @param [Tcp] handle
-  # @param [sockaddr_in] sockaddr_in
+  # @param [FFI::Pointer(*Sockaddr)] addr
+  # @param [Integer] flags
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_bind, :uv_tcp_bind, [Tcp.by_ref, :sockaddr_in], :int
-
-  # (Not documented)
-  #
-  # @method tcp_bind6(handle, sockaddr_in6)
-  # @param [Tcp] handle
-  # @param [sockaddr_in6] sockaddr_in6
-  # @return [Integer]
-  # @scope class
-  #
-  attach_function :tcp_bind6, :uv_tcp_bind6, [Tcp.by_ref, :sockaddr_in6], :int
+  attach_function :tcp_bind, :uv_tcp_bind, [Tcp.by_ref, :pointer, :uint], :int
 
   # (Not documented)
   #
@@ -1032,32 +977,22 @@ module UV
   #
   attach_function :tcp_getpeername, :uv_tcp_getpeername, [Tcp.by_ref, :pointer, :pointer], :int
 
-  # uv_tcp_connect, uv_tcp_connect6
-  # These functions establish IPv4 and IPv6 TCP connections. Provide an
-  # initialized TCP handle and an uninitialized uv_connect_t*. The callback
-  # will be made when the connection is established.
+  # Establish an IPv4 or IPv6 TCP connection.  Provide an initialized TCP handle
+  # and an uninitialized uv_connect_t*.  `addr` should point to an initialized
+  # struct sockaddr_in or struct sockaddr_in6.
   #
-  # @method tcp_connect(req, handle, address, cb)
+  # The callback is made when the connection has been established or when a
+  # connection error happened.
+  #
+  # @method tcp_connect(req, handle, addr, cb)
   # @param [Connect] req
   # @param [Tcp] handle
-  # @param [sockaddr_in] address
+  # @param [FFI::Pointer(*Sockaddr)] addr
   # @param [Proc(callback_connect_cb)] cb
   # @return [Integer]
   # @scope class
   #
-  attach_function :tcp_connect, :uv_tcp_connect, [Connect.by_ref, Tcp.by_ref, SockaddrIn.by_value, :connect_cb], :int
-
-  # (Not documented)
-  #
-  # @method tcp_connect6(req, handle, address, cb)
-  # @param [Connect] req
-  # @param [Tcp] handle
-  # @param [sockaddr_in6] address
-  # @param [Proc(callback_connect_cb)] cb
-  # @return [Integer]
-  # @scope class
-  #
-  attach_function :tcp_connect6, :uv_tcp_connect6, [Connect.by_ref, Tcp.by_ref, :sockaddr_in6, :connect_cb], :int
+  attach_function :tcp_connect, :uv_tcp_connect, [Connect.by_ref, Tcp.by_ref, :pointer, :connect_cb], :int
 
   # Initialize a new UDP handle. The actual socket is created lazily.
   # Returns 0 on success.
@@ -1078,6 +1013,14 @@ module UV
   #  etc.). In other words, other datagram-type sockets like raw sockets or
   #  netlink sockets can also be passed to this function.
   #
+  # This sets the SO_REUSEPORT socket flag on the BSDs and OS X. On other
+  # UNIX platforms, it sets the SO_REUSEADDR flag.  What that means is that
+  # multiple threads or processes can bind to the same address without error
+  # (provided they all set the flag) but only the last one to bind will receive
+  # any traffic, in effect "stealing" the port from the previous listener.
+  # This behavior is something of an anomaly and may be replaced by an explicit
+  # opt-in mechanism in future versions of libuv.
+  #
   # @method udp_open(handle, sock)
   # @param [Udp] handle
   # @param [Integer] sock
@@ -1086,43 +1029,26 @@ module UV
   #
   attach_function :udp_open, :uv_udp_open, [Udp.by_ref, :int], :int
 
-  # Bind to a IPv4 address and port.
+  # Bind to an IP address and port.
   #
   # Arguments:
   #  handle    UDP handle. Should have been initialized with `uv_udp_init`.
-  #  addr      struct sockaddr_in with the address and port to bind to.
-  #  flags     Unused.
+  #  addr      struct sockaddr_in or struct sockaddr_in6 with the address and
+  #            port to bind to.
+  #  flags     Indicate how the socket will be bound, UV_UDP_IPV6ONLY and
+  #            UV_UDP_REUSEADDR are supported.
   #
   # Returns:
   #  0 on success, or an error code < 0 on failure.
   #
   # @method udp_bind(handle, addr, flags)
   # @param [Udp] handle
-  # @param [sockaddr_in] addr
+  # @param [FFI::Pointer(*Sockaddr)] addr
   # @param [Integer] flags
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_bind, :uv_udp_bind, [Udp.by_ref, :sockaddr_in, :uint], :int
-
-  # Bind to a IPv6 address and port.
-  #
-  # Arguments:
-  #  handle    UDP handle. Should have been initialized with `uv_udp_init`.
-  #  addr      struct sockaddr_in with the address and port to bind to.
-  #  flags     Should be 0 or UV_UDP_IPV6ONLY.
-  #
-  # Returns:
-  #  0 on success, or an error code < 0 on failure.
-  #
-  # @method udp_bind6(handle, addr, flags)
-  # @param [Udp] handle
-  # @param [sockaddr_in6] addr
-  # @param [Integer] flags
-  # @return [Integer]
-  # @scope class
-  #
-  attach_function :udp_bind6, :uv_udp_bind6, [Udp.by_ref, :sockaddr_in6, :uint], :int
+  attach_function :udp_bind, :uv_udp_bind, [Udp.by_ref, :pointer, :uint], :int
 
   # (Not documented)
   #
@@ -1194,6 +1120,24 @@ module UV
   #
   attach_function :udp_set_multicast_ttl, :uv_udp_set_multicast_ttl, [Udp.by_ref, :int], :int
 
+  # Set the multicast interface to send on
+  #
+  # Arguments:
+  #  handle              UDP handle. Should have been initialized with
+  #                      `uv_udp_init`.
+  #  interface_addr      interface address
+  #
+  # Returns:
+  #  0 on success, or an error code < 0 on failure.
+  #
+  # @method udp_set_multicast_interface(handle, interface_addr)
+  # @param [Udp] handle
+  # @param [String] interface_addr
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :udp_set_multicast_interface, :uv_udp_set_multicast_interface, [Udp.by_ref, :string], :int
+
   # Set broadcast on or off
   #
   # Arguments:
@@ -1230,62 +1174,37 @@ module UV
   #
   attach_function :udp_set_ttl, :uv_udp_set_ttl, [Udp.by_ref, :int], :int
 
-  # Send data. If the socket has not previously been bound with `uv_udp_bind`
-  # or `uv_udp_bind6`, it is bound to 0.0.0.0 (the "all interfaces" address)
-  # and a random port number.
+  # Send data. If the socket has not previously been bound with `uv_udp_bind,`
+  # it is bound to 0.0.0.0 (the "all interfaces" address) and a random
+  # port number.
   #
   # Arguments:
   #  req       UDP request handle. Need not be initialized.
   #  handle    UDP handle. Should have been initialized with `uv_udp_init`.
   #  bufs      List of buffers to send.
-  #  bufcnt    Number of buffers in `bufs`.
-  #  addr      Address of the remote peer. See `uv_ip4_addr`.
+  #  nbufs     Number of buffers in `bufs`.
+  #  addr      struct sockaddr_in or struct sockaddr_in6 with the address and
+  #            port of the remote peer.
   #  send_cb   Callback to invoke when the data has been sent out.
   #
   # Returns:
   #  0 on success, or an error code < 0 on failure.
   #
-  # @method udp_send(req, handle, bufs, bufcnt, addr, send_cb)
+  # @method udp_send(req, handle, bufs, nbufs, addr, send_cb)
   # @param [UdpSend] req
   # @param [Udp] handle
   # @param [Array<unknown>] bufs
-  # @param [Integer] bufcnt
-  # @param [sockaddr_in] addr
+  # @param [Integer] nbufs
+  # @param [FFI::Pointer(*Sockaddr)] addr
   # @param [Proc(callback_udp_send_cb)] send_cb
   # @return [Integer]
   # @scope class
   #
-  attach_function :udp_send, :uv_udp_send, [UdpSend.by_ref, Udp.by_ref, :pointer, :int, :sockaddr_in, :udp_send_cb], :int
-
-  # Send data. If the socket has not previously been bound with `uv_udp_bind6`,
-  # it is bound to ::0 (the "all interfaces" address) and a random port number.
-  #
-  # Arguments:
-  #  req       UDP request handle. Need not be initialized.
-  #  handle    UDP handle. Should have been initialized with `uv_udp_init`.
-  #  bufs      List of buffers to send.
-  #  bufcnt    Number of buffers in `bufs`.
-  #  addr      Address of the remote peer. See `uv_ip6_addr`.
-  #  send_cb   Callback to invoke when the data has been sent out.
-  #
-  # Returns:
-  #  0 on success, or an error code < 0 on failure.
-  #
-  # @method udp_send6(req, handle, bufs, bufcnt, addr, send_cb)
-  # @param [UdpSend] req
-  # @param [Udp] handle
-  # @param [Array<unknown>] bufs
-  # @param [Integer] bufcnt
-  # @param [sockaddr_in6] addr
-  # @param [Proc(callback_udp_send_cb)] send_cb
-  # @return [Integer]
-  # @scope class
-  #
-  attach_function :udp_send6, :uv_udp_send6, [UdpSend.by_ref, Udp.by_ref, :pointer, :int, :sockaddr_in6, :udp_send_cb], :int
+  attach_function :udp_send, :uv_udp_send, [UdpSend.by_ref, Udp.by_ref, :pointer, :uint, :pointer, :udp_send_cb], :int
 
   # Receive data. If the socket has not previously been bound with `uv_udp_bind`
-  # or `uv_udp_bind6`, it is bound to 0.0.0.0 (the "all interfaces" address)
-  # and a random port number.
+  # it is bound to 0.0.0.0 (the "all interfaces" address) and a random
+  # port number.
   #
   # Arguments:
   #  handle    UDP handle. Should have been initialized with `uv_udp_init`.
@@ -1352,11 +1271,14 @@ module UV
   # To be called when the program exits. Resets TTY settings to default
   # values for the next process to take over.
   #
+  # This function is async signal-safe on UNIX platforms but can fail with error
+  # code UV_EBUSY if you call it when execution is inside uv_tty_set_mode().
+  #
   # @method tty_reset_mode()
-  # @return [nil]
+  # @return [Integer]
   # @scope class
   #
-  attach_function :tty_reset_mode, :uv_tty_reset_mode, [], :void
+  attach_function :tty_reset_mode, :uv_tty_reset_mode, [], :int
 
   # Gets the current Window size. On success zero is returned.
   #
@@ -1403,7 +1325,10 @@ module UV
   #
   attach_function :pipe_open, :uv_pipe_open, [Pipe.by_ref, :int], :int
 
-  # (Not documented)
+  # Bind the pipe to a file path (UNIX) or a name (Windows.)
+  #
+  # Paths on UNIX get truncated to `sizeof(sockaddr_un.sun_path)` bytes,
+  # typically between 92 and 108 bytes.
   #
   # @method pipe_bind(handle, name)
   # @param [Pipe] handle
@@ -1413,7 +1338,10 @@ module UV
   #
   attach_function :pipe_bind, :uv_pipe_bind, [Pipe.by_ref, :string], :int
 
-  # (Not documented)
+  # Connect to the UNIX domain socket or the named pipe.
+  #
+  # Paths on UNIX get truncated to `sizeof(sockaddr_un.sun_path)` bytes,
+  # typically between 92 and 108 bytes.
   #
   # @method pipe_connect(req, handle, name, cb)
   # @param [Connect] req
@@ -1424,6 +1352,22 @@ module UV
   # @scope class
   #
   attach_function :pipe_connect, :uv_pipe_connect, [Connect.by_ref, Pipe.by_ref, :string, :connect_cb], :void
+
+  # Get the name of the UNIX domain socket or the named pipe.
+  #
+  # A preallocated buffer must be provided. The len parameter holds the
+  # length of the buffer and it's set to the number of bytes written to the
+  # buffer on output. If the buffer is not big enough UV_ENOBUFS will be
+  # returned and len will contain the required size.
+  #
+  # @method pipe_getsockname(handle, buf, len)
+  # @param [Pipe] handle
+  # @param [String] buf
+  # @param [FFI::Pointer(*Size)] len
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :pipe_getsockname, :uv_pipe_getsockname, [Pipe.by_ref, :string, :pointer], :int
 
   # This setting applies to Windows only.
   # Set the number of pending pipe instance handles when the pipe server
@@ -1436,6 +1380,28 @@ module UV
   # @scope class
   #
   attach_function :pipe_pending_instances, :uv_pipe_pending_instances, [Pipe.by_ref, :int], :void
+
+  # Used to receive handles over ipc pipes.
+  #
+  # First - call `uv_pipe_pending_count`, if it is > 0 - initialize handle
+  # using type, returned by `uv_pipe_pending_type` and call
+  # `uv_accept(pipe, handle)`.
+  #
+  # @method pipe_pending_count(handle)
+  # @param [Pipe] handle
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :pipe_pending_count, :uv_pipe_pending_count, [Pipe.by_ref], :int
+
+  # (Not documented)
+  #
+  # @method pipe_pending_type(handle)
+  # @param [Pipe] handle
+  # @return [Symbol from `enum_handle_type`]
+  # @scope class
+  #
+  attach_function :pipe_pending_type, :uv_pipe_pending_type, [Pipe.by_ref], :handle_type
 
   # Initialize the poll watcher using a file descriptor.
   #
@@ -1593,8 +1559,6 @@ module UV
 
   # This can be called from other threads to wake up a libuv thread.
   #
-  # libuv is single threaded at the moment.
-  #
   # @method async_send(async)
   # @param [Async] async
   # @return [Integer]
@@ -1709,19 +1673,32 @@ module UV
   #
   attach_function :freeaddrinfo, :uv_freeaddrinfo, [:pointer], :void
 
-  # Initializes uv_process_t and starts the process.
+  # Initializes the uv_process_t and starts the process. If the process is
+  # successfully spawned, then this function will return 0. Otherwise, the
+  # negative error code corresponding to the reason it couldn't spawn is
+  # returned.
   #
-  # @method spawn(loop, process, options)
+  # Possible reasons for failing to spawn would include (but not be limited to)
+  # the file to execute not existing, not having permissions to use the setuid or
+  # setgid specified, or not having enough memory to allocate for the new
+  # process.
+  #
+  # @method spawn(loop, handle, options)
   # @param [Loop] loop
-  # @param [Process] process
+  # @param [Process] handle
   # @param [ProcessOptions] options
   # @return [Integer]
   # @scope class
   #
-  attach_function :spawn, :uv_spawn, [Loop.by_ref, Process.by_ref, ProcessOptions.by_value], :int
+  attach_function :spawn, :uv_spawn, [Loop.by_ref, Process.by_ref, ProcessOptions.by_ref], :int
 
   # Kills the process with the specified signal. The user must still
   # call uv_close on the process.
+  #
+  # Emulates some aspects of Unix exit status on Windows, in that while the
+  # underlying process will be terminated with a status of `1`,
+  # `uv_process_t.exit_signal` will be set to signum, so the process will appear
+  # to have been killed by `signum`.
   #
   # @method process_kill(process, signum)
   # @param [Process] process
@@ -1732,6 +1709,16 @@ module UV
   attach_function :process_kill, :uv_process_kill, [Process.by_ref, :int], :int
 
   # Kills the process with the specified signal.
+  #
+  # Emulates some aspects of Unix signals on Windows:
+  # - SIGTERM, SIGKILL, and SIGINT call TerminateProcess() to unconditionally
+  #   cause the target to exit with status 1. Unlike Unix, this cannot be caught
+  #   or ignored (but see uv_process_kill() and uv_signal_start()).
+  # - Signal number `0` causes a check for target existence, as in Unix. Return
+  #   value is 0 on existence, UV_ESRCH on non-existence.
+  #
+  # Returns 0 on success, or an error code on failure. UV_ESRCH is portably used
+  # for non-existence of target process, other errors may be system specific.
   #
   # @method kill(pid, signum)
   # @param [Integer] pid
@@ -1829,6 +1816,16 @@ module UV
   #
   attach_function :uptime, :uv_uptime, [:pointer], :int
 
+  # Get information about OS resource utilization for the current process.
+  # Please note that not all uv_rusage_t struct fields will be filled on Windows.
+  #
+  # @method getrusage(rusage)
+  # @param [Rusage] rusage
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :getrusage, :uv_getrusage, [Rusage.by_ref], :int
+
   # This allocates cpu_infos array, and sets count.  The array
   # is freed using uv_free_cpu_info().
   #
@@ -1908,18 +1905,18 @@ module UV
 
   # (Not documented)
   #
-  # @method fs_read(loop, req, file, buf, length, offset, cb)
+  # @method fs_read(loop, req, file, bufs, nbufs, offset, cb)
   # @param [Loop] loop
   # @param [Fs] req
   # @param [Integer] file
-  # @param [FFI::Pointer(*Void)] buf
-  # @param [Integer] length
+  # @param [Array<unknown>] bufs
+  # @param [Integer] nbufs
   # @param [Integer] offset
   # @param [Proc(callback_fs_cb)] cb
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_read, :uv_fs_read, [Loop.by_ref, Fs.by_ref, :int, :pointer, :ulong, :long_long, :fs_cb], :int
+  attach_function :fs_read, :uv_fs_read, [Loop.by_ref, Fs.by_ref, :int, :pointer, :uint, :long_long, :fs_cb], :int
 
   # (Not documented)
   #
@@ -1935,18 +1932,18 @@ module UV
 
   # (Not documented)
   #
-  # @method fs_write(loop, req, file, buf, length, offset, cb)
+  # @method fs_write(loop, req, file, bufs, nbufs, offset, cb)
   # @param [Loop] loop
   # @param [Fs] req
   # @param [Integer] file
-  # @param [FFI::Pointer(*Void)] buf
-  # @param [Integer] length
+  # @param [Array<unknown>] bufs
+  # @param [Integer] nbufs
   # @param [Integer] offset
   # @param [Proc(callback_fs_cb)] cb
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_write, :uv_fs_write, [Loop.by_ref, Fs.by_ref, :int, :pointer, :ulong, :long_long, :fs_cb], :int
+  attach_function :fs_write, :uv_fs_write, [Loop.by_ref, Fs.by_ref, :int, :pointer, :uint, :long_long, :fs_cb], :int
 
   # (Not documented)
   #
@@ -2252,6 +2249,21 @@ module UV
   #
   attach_function :fs_poll_stop, :uv_fs_poll_stop, [FsPoll.by_ref], :int
 
+  # Get the path being monitored by the handle. The buffer must be preallocated
+  # by the user. Returns 0 on success or an error code < 0 in case of failure.
+  # On sucess, `buf` will contain the path and `len` its length. If the buffer
+  # is not big enough UV_ENOBUFS will be returned and len will be set to the
+  # required size.
+  #
+  # @method fs_poll_getpath(handle, buf, len)
+  # @param [FsPoll] handle
+  # @param [String] buf
+  # @param [FFI::Pointer(*Size)] len
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :fs_poll_getpath, :uv_fs_poll_getpath, [FsPoll.by_ref, :string, :pointer], :int
+
   # (Not documented)
   #
   # @method signal_init(loop, handle)
@@ -2295,36 +2307,71 @@ module UV
 
   # (Not documented)
   #
-  # @method fs_event_init(loop, handle, filename, cb, flags)
+  # @method fs_event_init(loop, handle)
   # @param [Loop] loop
   # @param [FsEvent] handle
-  # @param [String] filename
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :fs_event_init, :uv_fs_event_init, [Loop.by_ref, FsEvent.by_ref], :int
+
+  # (Not documented)
+  #
+  # @method fs_event_start(handle, cb, path, flags)
+  # @param [FsEvent] handle
   # @param [Proc(callback_fs_event_cb)] cb
+  # @param [String] path
   # @param [Integer] flags
   # @return [Integer]
   # @scope class
   #
-  attach_function :fs_event_init, :uv_fs_event_init, [Loop.by_ref, FsEvent.by_ref, :string, :fs_event_cb, :int], :int
-
-  # Convert string ip addresses to binary structures
-  #
-  # @method ip4_addr(ip, port)
-  # @param [String] ip
-  # @param [Integer] port
-  # @return [sockaddr_in]
-  # @scope class
-  #
-  attach_function :ip4_addr, :uv_ip4_addr, [:string, :int], SockaddrIn.by_value
+  attach_function :fs_event_start, :uv_fs_event_start, [FsEvent.by_ref, :fs_event_cb, :string, :uint], :int
 
   # (Not documented)
   #
-  # @method ip6_addr(ip, port)
-  # @param [String] ip
-  # @param [Integer] port
-  # @return [sockaddr_in6]
+  # @method fs_event_stop(handle)
+  # @param [FsEvent] handle
+  # @return [Integer]
   # @scope class
   #
-  attach_function :ip6_addr, :uv_ip6_addr, [:string, :int], SockaddrIn.by_value
+  attach_function :fs_event_stop, :uv_fs_event_stop, [FsEvent.by_ref], :int
+
+  # Get the path being monitored by the handle. The buffer must be preallocated
+  # by the user. Returns 0 on success or an error code < 0 in case of failure.
+  # On sucess, `buf` will contain the path and `len` its length. If the buffer
+  # is not big enough UV_ENOBUFS will be returned and len will be set to the
+  # required size.
+  #
+  # @method fs_event_getpath(handle, buf, len)
+  # @param [FsEvent] handle
+  # @param [String] buf
+  # @param [FFI::Pointer(*Size)] len
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :fs_event_getpath, :uv_fs_event_getpath, [FsEvent.by_ref, :string, :pointer], :int
+
+  # Convert string ip addresses to binary structures
+  #
+  # @method ip4_addr(ip, port, addr)
+  # @param [String] ip
+  # @param [Integer] port
+  # @param [FFI::Pointer(*SockaddrIn)] addr
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :ip4_addr, :uv_ip4_addr, [:string, :int, :pointer], :int
+
+  # (Not documented)
+  #
+  # @method ip6_addr(ip, port, addr)
+  # @param [String] ip
+  # @param [Integer] port
+  # @param [FFI::Pointer(*SockaddrIn6)] addr
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :ip6_addr, :uv_ip6_addr, [:string, :int, :pointer], :int
 
   # Convert binary addresses to strings
   #
@@ -2385,11 +2432,11 @@ module UV
   #
   # @method cwd(buffer, size)
   # @param [String] buffer
-  # @param [Integer] size
+  # @param [FFI::Pointer(*Size)] size
   # @return [Integer]
   # @scope class
   #
-  attach_function :cwd, :uv_cwd, [:string, :ulong], :int
+  attach_function :cwd, :uv_cwd, [:string, :pointer], :int
 
   # Changes the current working directory
   #
@@ -2758,6 +2805,48 @@ module UV
   # @scope class
   #
   attach_function :once, :uv_once, [:pointer, :pointer], :void
+
+  # Thread-local storage.  These functions largely follow the semantics of
+  # pthread_key_create(), pthread_key_delete(), pthread_getspecific() and
+  # pthread_setspecific().
+  #
+  # Note that the total thread-local storage size may be limited.
+  # That is, it may not be possible to create many TLS keys.
+  #
+  # @method key_create(key)
+  # @param [FFI::Pointer(*Key)] key
+  # @return [Integer]
+  # @scope class
+  #
+  attach_function :key_create, :uv_key_create, [:pointer], :int
+
+  # (Not documented)
+  #
+  # @method key_delete(key)
+  # @param [FFI::Pointer(*Key)] key
+  # @return [nil]
+  # @scope class
+  #
+  attach_function :key_delete, :uv_key_delete, [:pointer], :void
+
+  # (Not documented)
+  #
+  # @method key_get(key)
+  # @param [FFI::Pointer(*Key)] key
+  # @return [FFI::Pointer(*Void)]
+  # @scope class
+  #
+  attach_function :key_get, :uv_key_get, [:pointer], :pointer
+
+  # (Not documented)
+  #
+  # @method key_set(key, value)
+  # @param [FFI::Pointer(*Key)] key
+  # @param [FFI::Pointer(*Void)] value
+  # @return [nil]
+  # @scope class
+  #
+  attach_function :key_set, :uv_key_set, [:pointer, :pointer], :void
 
   # (Not documented)
   #

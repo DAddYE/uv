@@ -8,7 +8,7 @@ module UV
   # signals will lead to unpredictable behavior and is strongly discouraged.
   # Future versions of libuv may simply reject them.
   #
-  # Some signal support is available on Windows:
+  # Reception of some signals is emulated on Windows:
   #
   #   SIGINT is normally delivered when the user presses CTRL+C. However, like
   #   on Unix, it is not generated when terminal raw mode is enabled.
@@ -27,27 +27,30 @@ module UV
   #   the console buffer will also trigger a SIGWINCH signal.
   #
   # Watchers for other signals can be successfully created, but these signals
-  # are never generated. These signals are: SIGILL, SIGABRT, SIGFPE, SIGSEGV,
+  # are never received. These signals are: SIGILL, SIGABRT, SIGFPE, SIGSEGV,
   # SIGTERM and SIGKILL.
   #
   # Note that calls to raise() or abort() to programmatically raise a signal are
   # not detected by libuv; these will not trigger a signal watcher.
   #
+  # See uv_process_kill() and uv_kill() for information about support for sending
+  # signals.
+  #
   # ## Fields:
-  # :close_cb ::
-  #   (Proc(callback_close_cb))
   # :data ::
   #   (FFI::Pointer(*Void))
   # :loop ::
   #   (Loop)
   # :type ::
   #   (Symbol from `enum_handle_type`)
+  # :close_cb ::
+  #   (Proc(callback_close_cb))
   # :handle_queue ::
   #   (Array<FFI::Pointer(*Void)>)
-  # :flags ::
-  #   (Integer)
   # :next_closing ::
   #   (Handle)
+  # :flags ::
+  #   (Integer)
   # :signal_cb ::
   #   (Proc(callback_signal_cb))
   # :signum ::
@@ -74,13 +77,13 @@ module UV
 
   class Signal < FFI::Struct
     include SignalWrappers
-    layout :close_cb, :close_cb,
-           :data, :pointer,
+    layout :data, :pointer,
            :loop, Loop.by_ref,
            :type, :handle_type,
+           :close_cb, :close_cb,
            :handle_queue, [:pointer, 2],
-           :flags, :int,
            :next_closing, Handle.by_ref,
+           :flags, :uint,
            :signal_cb, :signal_cb,
            :signum, :int,
            :tree_entry, SignalTreeEntry.by_value,

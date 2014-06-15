@@ -3,32 +3,29 @@ module UV
   #
   # uv_stream is an abstract class.
   #
-  # uv_stream_t is the parent class of uv_tcp_t, uv_pipe_t, uv_tty_t, and
-  # soon uv_file_t.
+  # uv_stream_t is the parent class of uv_tcp_t, uv_pipe_t and uv_tty_t.
   #
   # ## Fields:
-  # :close_cb ::
-  #   (Proc(callback_close_cb))
   # :data ::
   #   (FFI::Pointer(*Void))
   # :loop ::
   #   (Loop)
   # :type ::
   #   (Symbol from `enum_handle_type`)
+  # :close_cb ::
+  #   (Proc(callback_close_cb))
   # :handle_queue ::
   #   (Array<FFI::Pointer(*Void)>)
-  # :flags ::
-  #   (Integer)
   # :next_closing ::
   #   (Handle)
+  # :flags ::
+  #   (Integer)
   # :write_queue_size ::
   #   (Integer)
   # :alloc_cb ::
   #   (Proc(callback_alloc_cb))
   # :read_cb ::
   #   (Proc(callback_read_cb))
-  # :read2_cb ::
-  #   (Proc(callback_read2_cb))
   # :connect_req ::
   #   (Connect)
   # :shutdown_req ::
@@ -45,6 +42,8 @@ module UV
   #   (Integer)
   # :accepted_fd ::
   #   (Integer)
+  # :queued_fds ::
+  #   (FFI::Pointer(*Void))
   # :select ::
   #   (FFI::Pointer(*Void))
   module StreamWrappers
@@ -57,17 +56,16 @@ module UV
 
   class Stream < FFI::Struct
     include StreamWrappers
-    layout :close_cb, :close_cb,
-           :data, :pointer,
+    layout :data, :pointer,
            :loop, Loop.by_ref,
            :type, :handle_type,
+           :close_cb, :close_cb,
            :handle_queue, [:pointer, 2],
-           :flags, :int,
            :next_closing, Handle.by_ref,
+           :flags, :uint,
            :write_queue_size, :ulong,
            :alloc_cb, :alloc_cb,
            :read_cb, :read_cb,
-           :read2_cb, :read2_cb,
            :connect_req, Connect.by_ref,
            :shutdown_req, Shutdown.by_ref,
            :io_watcher, Io.by_value,
@@ -76,6 +74,7 @@ module UV
            :connection_cb, :connection_cb,
            :delayed_error, :int,
            :accepted_fd, :int,
+           :queued_fds, :pointer,
            :select, :pointer
   end
 

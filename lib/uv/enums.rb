@@ -69,14 +69,35 @@ module UV
     :uv_join_group, 1
   ]
 
+  # (Not documented)
+  #
+  # ## Options:
+  # :uv_tcp_ipv6only ::
+  #   Used with uv_tcp_bind, when an IPv6 address is used
+  #
+  # @method `enum_tcp_flags`
+  # @return [Symbol]
+  # @scope class
+  #
+  enum :tcp_flags, [
+    :uv_tcp_ipv6only, 1
+  ]
+
   # UDP support.
   #
   # ## Options:
   # :uv_udp_ipv6only ::
-  #   Disables dual stack mode. Used with uv_udp_bind6().
+  #   Disables dual stack mode.
   # :uv_udp_partial ::
   #   Indicates message was truncated because read buffer was too small. The
   #   remainder was discarded by the OS. Used in uv_udp_recv_cb.
+  # :uv_udp_reuseaddr ::
+  #   Indicates if SO_REUSEADDR will be set when binding the handle.
+  #   This sets the SO_REUSEPORT socket flag on the BSDs and OS X. On other
+  #   UNIX platforms, it sets the SO_REUSEADDR flag.  What that means is that
+  #   multiple threads or processes can bind to the same address without error
+  #   (provided they all set the flag) but only the last one to bind will receive
+  #   any traffic, in effect "stealing" the port from the previous listener.
   #
   # @method `enum_udp_flags`
   # @return [Symbol]
@@ -84,7 +105,8 @@ module UV
   #
   enum :udp_flags, [
     :uv_udp_ipv6only, 1,
-    :uv_udp_partial, 2
+    :uv_udp_partial, 2,
+    :uv_udp_reuseaddr, 4
   ]
 
   # (Not documented)
@@ -254,7 +276,7 @@ module UV
     :uv_change, 2
   ]
 
-  # Flags to be passed to uv_fs_event_init.
+  # Flags to be passed to uv_fs_event_start.
   #
   # ## Options:
   # :uv_fs_event_watch_entry ::
@@ -281,7 +303,7 @@ module UV
   enum :fs_event_flags, [
     :uv_fs_event_watch_entry, 1,
     :uv_fs_event_stat, 2,
-    :uv_fs_event_recursive, 3
+    :uv_fs_event_recursive, 4
   ]
 
   # (Not documented)

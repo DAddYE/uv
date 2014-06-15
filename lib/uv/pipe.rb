@@ -5,28 +5,26 @@ module UV
   # Pipe. On Unix this is a UNIX domain socket.
   #
   # ## Fields:
-  # :close_cb ::
-  #   (Proc(callback_close_cb))
   # :data ::
   #   (FFI::Pointer(*Void))
   # :loop ::
   #   (Loop)
   # :type ::
   #   (Symbol from `enum_handle_type`)
+  # :close_cb ::
+  #   (Proc(callback_close_cb))
   # :handle_queue ::
   #   (Array<FFI::Pointer(*Void)>)
-  # :flags ::
-  #   (Integer)
   # :next_closing ::
   #   (Handle)
+  # :flags ::
+  #   (Integer)
   # :write_queue_size ::
   #   (Integer)
   # :alloc_cb ::
   #   (Proc(callback_alloc_cb))
   # :read_cb ::
   #   (Proc(callback_read_cb))
-  # :read2_cb ::
-  #   (Proc(callback_read2_cb))
   # :connect_req ::
   #   (Connect)
   # :shutdown_req ::
@@ -43,6 +41,8 @@ module UV
   #   (Integer)
   # :accepted_fd ::
   #   (Integer)
+  # :queued_fds ::
+  #   (FFI::Pointer(*Void))
   # :select ::
   #   (FFI::Pointer(*Void))
   # :ipc ::
@@ -62,26 +62,42 @@ module UV
       UV.pipe_bind(self, name)
     end
 
+    # @param [String] buf
+    # @param [FFI::Pointer(*Size)] len
+    # @return [Integer]
+    def getsockname(buf, len)
+      UV.pipe_getsockname(self, buf, len)
+    end
+
     # @param [Integer] count
     # @return [nil]
     def pending_instances(count)
       UV.pipe_pending_instances(self, count)
     end
+
+    # @return [Integer]
+    def pending_count()
+      UV.pipe_pending_count(self)
+    end
+
+    # @return [Symbol from `enum_handle_type`]
+    def pending_type()
+      UV.pipe_pending_type(self)
+    end
   end
 
   class Pipe < FFI::Struct
     include PipeWrappers
-    layout :close_cb, :close_cb,
-           :data, :pointer,
+    layout :data, :pointer,
            :loop, Loop.by_ref,
            :type, :handle_type,
+           :close_cb, :close_cb,
            :handle_queue, [:pointer, 2],
-           :flags, :int,
            :next_closing, Handle.by_ref,
+           :flags, :uint,
            :write_queue_size, :ulong,
            :alloc_cb, :alloc_cb,
            :read_cb, :read_cb,
-           :read2_cb, :read2_cb,
            :connect_req, Connect.by_ref,
            :shutdown_req, Shutdown.by_ref,
            :io_watcher, Io.by_value,
@@ -90,6 +106,7 @@ module UV
            :connection_cb, :connection_cb,
            :delayed_error, :int,
            :accepted_fd, :int,
+           :queued_fds, :pointer,
            :select, :pointer,
            :ipc, :int,
            :pipe_fname, :string

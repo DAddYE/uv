@@ -30,10 +30,10 @@ module UV
   #   (Integer)
   # :mode ::
   #   (Integer)
-  # :buf ::
-  #   (FFI::Pointer(*Void))
-  # :len ::
+  # :nbufs ::
   #   (Integer)
+  # :bufs ::
+  #   (Buf)
   # :off ::
   #   (Integer)
   # :uid ::
@@ -46,6 +46,8 @@ module UV
   #   (Float)
   # :work_req ::
   #   (Work)
+  # :bufsml ::
+  #   (Array<Buf>)
   module FsWrappers
     # @return [nil]
     def req_cleanup()
@@ -69,14 +71,15 @@ module UV
            :file, :int,
            :flags, :int,
            :mode, :ushort,
-           :buf, :pointer,
-           :len, :ulong,
+           :nbufs, :uint,
+           :bufs, Buf.by_ref,
            :off, :long_long,
            :uid, :uint,
            :gid, :uint,
            :atime, :double,
            :mtime, :double,
-           :work_req, Work.by_value
+           :work_req, Work.by_value,
+           :bufsml, [Buf.by_value, 4]
   end
 
 end

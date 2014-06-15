@@ -20,7 +20,7 @@ module UV
   #   (Integer)
   # :bufs ::
   #   (Buf)
-  # :bufcnt ::
+  # :nbufs ::
   #   (Integer)
   # :error ::
   #   (Integer)
@@ -29,11 +29,11 @@ module UV
   module WriteWrappers
     # @param [Stream] handle
     # @param [Array<unknown>] bufs
-    # @param [Integer] bufcnt
+    # @param [Integer] nbufs
     # @param [Proc(callback_write_cb)] cb
     # @return [Integer]
-    def write(handle, bufs, bufcnt, cb)
-      UV.write(self, handle, bufs, bufcnt, cb)
+    def write(handle, bufs, nbufs, cb)
+      UV.write(self, handle, bufs, nbufs, cb)
     end
   end
 
@@ -46,9 +46,9 @@ module UV
            :send_handle, Stream.by_ref,
            :handle, Stream.by_ref,
            :queue, [:pointer, 2],
-           :write_index, :int,
+           :write_index, :uint,
            :bufs, Buf.by_ref,
-           :bufcnt, :int,
+           :nbufs, :uint,
            :error, :int,
            :bufsml, [Buf.by_value, 4]
   end
