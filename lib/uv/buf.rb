@@ -7,7 +7,7 @@ module UV
   # :len ::
   #   (Integer)
   class Buf < FFI::Struct
-    layout :base, :string,
+    layout :base, :pointer,
            :len, :ulong
   end
 

@@ -22,8 +22,7 @@ task :generate do
   FFI::Gen.generate(
     module_name:  "UV",
     ffi_lib:      'File.join(__dir__, "../ext/build/lib/libuv.#{FFI::Platform::LIBSUFFIX}")',
-    headers:      ["pthread-fixes.h", "uv-errno.h", "uv-unix.h",
-                   "uv.h"],
+    headers:      ["uv-errno.h", "uv-unix.h", "uv.h"],
     prefixes:     ["uv_"],
     suffixes:     ["_s", "_t"],
     require_path: 'uv',

@@ -1,48 +1,21 @@
 require 'bundler/setup'
+require_relative './helpers'
 require 'uv'
-require 'fiber'
 
 LOOP = UV.default_loop
-CALLBACK = {}
-
-# Helpers
-def refute_error(error_code)
-  return if error_code.nil?
-  return if error_code >= 0
-  err = LOOP.lookup_error(error_code)
-  return if !err
-  raise RuntimeError, err, caller
-end
-
-def assert_kind_of(type, actual)
-  return if actual.kind_of?(type)
-  msg = "value #{actual.inspect} is not a valid #{type}"
-  raise ArgumentError, msg, caller
-end
-
-def callback(name, &block)
-  fiber = Fiber.current
-  name  = "#{name}:#{object_id}"
-  CALLBACK[name] ||= ->(*args) do
-    begin
-      block[args] if block
-    ensure
-      fiber.resume(*args)
-      CALLBACK.delete(name)
-    end
-  end
-  CALLBACK[name]
-end
 
 # Fiber methods
 def connect(client)
+  assert_kind_of(Tcp, srv)
+
   addr = UV::SockaddrIn.new
   err = UV.ip4_addr('127.0.0.1', 4150, addr)
   refute_error(err)
-  err = UV.tcp_connect(UV::Connect.new, client, addr, callback(:connect_cb))
+
+  err = UV.tcp_connect(UV::Connect.new, client, addr, resume)
   refute_error(err)
 
-  Fiber.yield
+  wait
 end
 
 def write(req, text)
@@ -50,21 +23,32 @@ def write(req, text)
   assert_kind_of(UV::Stream, req[:handle])
 
   buf = UV.buf_init(text, text.bytesize)
-  err = UV.write(UV::Write.new, req[:handle], buf, 1, callback(:write_cb))
+  err = UV.write(UV::Write.new, req[:handle], buf, 1, resume)
   refute_error(err)
 
-  Fiber.yield
+  wait
 end
 
 def read(req)
-  assert_kind_of(UV::Write, req)
   assert_kind_of(UV::Stream, req[:handle])
 
-  alloc_cb = CALLBACK[:alloc_cb] = ->(handle, size){ UV.buff_init('', size) }
-  err = UV.read_start(req[:handle], alloc_cb, callback(:read_cb))
+  f = Fiber.current
+
+  read_cb = ->(stream, nread, buf) do
+    text = buf[:base].read_string(nread)
+    UV.free(buf[:base])
+    f.resume(stream, nread, text)
+  end
+
+  alloc_cb = ->(handle, size, buf) do
+    buf[:len] = size
+    buf[:base] = UV.malloc(size)
+  end
+
+  err = UV.read_start(req[:handle], alloc_cb, read_cb)
   refute_error(err)
 
-  Fiber.yield
+  wait
 end
 
 Fiber.new do
@@ -74,17 +58,16 @@ Fiber.new do
   refute_error(err)
 
   # Open connection
-  req, s = connect(client)
+  connect_req, s = connect(client)
   raise 'Error with connection' if s == -1
 
   # Start writing
-  write_req, s = write(req, 'hello')
+  write_req, s = write(connect_req, 'hello')
   raise 'Error with write' if s == -1
 
   # Read the response
   stream, nread, buf = read(write_req)
-  check_error(nread)
-  p stream, nread, buf[:base]
+  refute_error(nread)
 end.
 resume
 

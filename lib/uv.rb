@@ -83,6 +83,8 @@ module UV
   typedef SockaddrIn.by_ref, :sockaddr_in
   typedef SockaddrIn6.by_ref, :sockaddr_in6
 
+  attach_function :malloc, [:size_t], :pointer
+  attach_function :free, [:pointer], :void
 
   # (Not documented)
   #
