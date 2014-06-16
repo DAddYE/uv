@@ -27,9 +27,9 @@ def read(req)
   f = Fiber.current
 
   read_cb = ->(stream, nread, buf) do
-    text = buf[:base].read_string(nread)
+    text = nread > 0 ? buf[:base].read_string(nread) : ''
     UV.free(buf[:base])
-    f.resume(stream, nread, text)
+    f.resume(stream, nread, text) if f.alive?
   end
 
   alloc_cb = ->(handle, size, buf) do
@@ -43,30 +43,50 @@ def read(req)
   wait
 end
 
-def close(request)
-  UV.close(UV::Handle.new(request.to_ptr), resume)
+def close(req)
+  UV.close(UV::Handle.new(req.to_ptr), resume)
   wait
 end
 
+def write(req, text)
+  assert_kind_of(UV::Stream, req)
+
+  buf = UV.buf_init(text, text.bytesize)
+  err = UV.write(UV::Write.new, req, buf, 1, resume)
+  refute_error(err)
+
+  wait
+end
+
+
 Fiber.new do
+  # Initialize the server
   server = UV::Tcp.new
   err = UV.tcp_init(LOOP, server)
   refute_error(err)
   server_stream, err = listen(server)
   refute_error(err)
 
+  # Setup a listener
   client = UV::Tcp.new
   client_stream = UV::Stream.new(client.to_ptr)
   err = UV.tcp_init(LOOP, client)
   refute_error(err)
 
+  # Accept requests
   err = UV.accept(server_stream, client_stream)
   refute_error(err)
 
+  # Start echo-ing
   loop do
-    stream, nread, buf = read(client_stream)
-    refute_error(nread)
+    _, err, buf = read(client_stream)
+    refute_error(err)
     puts buf
+
+    _, err = write(client_stream, buf)
+    refute_error(err)
+
+    # If we recive `quit` then we can close
     if buf == "quit\n"
       close(client)
       close(server)

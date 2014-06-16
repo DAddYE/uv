@@ -6,7 +6,7 @@ LOOP = UV.default_loop
 
 # Fiber methods
 def connect(client)
-  assert_kind_of(Tcp, srv)
+  assert_kind_of(UV::Tcp, client)
 
   addr = UV::SockaddrIn.new
   err = UV.ip4_addr('127.0.0.1', 4150, addr)
@@ -35,9 +35,9 @@ def read(req)
   f = Fiber.current
 
   read_cb = ->(stream, nread, buf) do
-    text = buf[:base].read_string(nread)
+    text = nread > 0 ? buf[:base].read_string(nread) : ''
     UV.free(buf[:base])
-    f.resume(stream, nread, text)
+    f.resume(stream, nread, text) if f.alive?
   end
 
   alloc_cb = ->(handle, size, buf) do
@@ -62,12 +62,17 @@ Fiber.new do
   raise 'Error with connection' if s == -1
 
   # Start writing
-  write_req, s = write(connect_req, 'hello')
-  raise 'Error with write' if s == -1
+  write_req, err = write(connect_req, "hello\n")
+  refute_error(err)
 
   # Read the response
-  stream, nread, buf = read(write_req)
-  refute_error(nread)
+  _, err, buf = read(write_req)
+  refute_error(err)
+  puts buf
+
+  # Ask to close the close
+  _, err = write(connect_req, "quit\n")
+  refute_error(err)
 end.
 resume
 
