@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: UV::ProcessOptions
+  
+    &mdash; Documentation by YARD 0.8.7.4
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!UV/ProcessOptions.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (P)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../UV.html" title="UV (module)">UV</a></span></span>
+     &raquo; 
+    <span class="title">ProcessOptions</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: UV::ProcessOptions
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">FFI::Struct</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">FFI::Struct</li>
+          
+            <li class="next">UV::ProcessOptions</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/uv/process_options.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>(Not documented)</p>
+
+<p>## Fields:</p>
+<dl class="rdoc-list note-list"><dt>:exit_cb 
+<dd>
+<p>(Proc(callback_exit_cb)) Called after the process exits.</p>
+</dd><dt>:file 
+<dd>
+<p>(String) Path to program to execute.</p>
+</dd><dt>:args 
+<dd>
+<p>(FFI::Pointer(**CharS)) Command line arguments. args(0) should be the path
+to the program. On Windows this uses CreateProcess which concatenates the
+arguments into a string this can cause some strange errors. See the note at
+windows_verbatim_arguments.</p>
+</dd><dt>:env 
+<dd>
+<p>(FFI::Pointer(**CharS)) This will be set as the environ variable in the
+subprocess. If this is NULL then the parents environ will be used.</p>
+</dd><dt>:cwd 
+<dd>
+<p>(String) If non-null this represents a directory the subprocess should
+execute in. Stands for current working directory.</p>
+</dd><dt>:flags 
+<dd>
+<p>(Integer) Various flags that control how uv_spawn() behaves. See the
+definition of `enum uv_process_flags` below.</p>
+</dd><dt>:stdio_count 
+<dd>
+<p>(Integer) The `stdio` field points to an array of uv_stdio_container_t
+structs that describe the file descriptors that will be made available to
+the child process. The convention is that stdio(0) points to stdin, fd 1 is
+used for stdout, and fd 2 is stderr.</p>
+
+<p>Note that on windows file descriptors greater than 2 are available to the
+child process only if the child processes uses the MSVCRT runtime.</p>
+</dd><dt>:stdio 
+<dd>
+<p>(StdioContainer)</p>
+</dd><dt>:uid 
+<dd>
+<p>(Integer) Libuv can change the child process&#39; user/group id. This
+happens only when the appropriate bits are set in the flags fields. This is
+not supported on windows; uv_spawn() will fail and set the error to
+UV_ENOTSUP.</p>
+</dd><dt>:gid 
+<dd>
+<p>(Integer)</p>
+</dd></dl>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+
+
+
+  
+
+</div>
+
+    <div id="footer">
+  Generated on Mon Jun 16 00:26:41 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.4 (ruby-2.1.2).
+</div>
+
+  </body>
+</html>

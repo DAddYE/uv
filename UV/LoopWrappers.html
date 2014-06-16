@@ -1,0 +1,544 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: UV::LoopWrappers
+  
+    &mdash; Documentation by YARD 0.8.7.4
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!UV/LoopWrappers.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (L)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../UV.html" title="UV (module)">UV</a></span></span>
+     &raquo; 
+    <span class="title">LoopWrappers</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: UV::LoopWrappers
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+    <dt class="r1">Included in:</dt>
+    <dd class="r1"><span class='object_link'><a href="Loop.html" title="UV::Loop (class)">Loop</a></span></dd>
+    
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/uv/loop.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>(Not documented)</p>
+
+<p>## Fields:</p>
+<dl class="rdoc-list note-list"><dt>:data 
+<dd>
+<p>(FFI::Pointer(*Void)) User data - use this for whatever.</p>
+</dd><dt>:active_handles 
+<dd>
+<p>(Integer) Loop reference counting</p>
+</dd><dt>:handle_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:active_reqs 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:stop_flag 
+<dd>
+<p>(Integer) Internal flag to signal loop stop</p>
+</dd><dt>:flags 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:backend_fd 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:pending_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:watcher_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:watchers 
+<dd>
+<p>(FFI::Pointer(**Io))</p>
+</dd><dt>:nwatchers 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:nfds 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:wq 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:wq_mutex 
+<dd>
+<p>(unknown)</p>
+</dd><dt>:wq_async 
+<dd>
+<p>(Async)</p>
+</dd><dt>:cloexec_lock 
+<dd>
+<p>(unknown)</p>
+</dd><dt>:closing_handles 
+<dd>
+<p>(Handle)</p>
+</dd><dt>:process_handles 
+<dd>
+<p>(Array&lt;Array&lt;FFI::Pointer(*Void)&gt;&gt;)</p>
+</dd><dt>:prepare_handles 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:check_handles 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:idle_handles 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:async_handles 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:async_watcher 
+<dd>
+<p>(Async)</p>
+</dd><dt>:timer_heap 
+<dd>
+<p>(LoopTimerHeap)</p>
+</dd><dt>:timer_counter 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:time 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:signal_pipefd 
+<dd>
+<p>(Array&lt;Integer&gt;)</p>
+</dd><dt>:signal_io_watcher 
+<dd>
+<p>(Io)</p>
+</dd><dt>:child_watcher 
+<dd>
+<p>(Signal)</p>
+</dd><dt>:emfile_fd 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:cf_thread 
+<dd>
+<p>(FFI::Pointer(Thread))</p>
+</dd><dt>:cf_reserved 
+<dd>
+<p>(FFI::Pointer(*Void))</p>
+</dd><dt>:cf_state 
+<dd>
+<p>(FFI::Pointer(*Void))</p>
+</dd><dt>:cf_mutex 
+<dd>
+<p>(unknown)</p>
+</dd><dt>:cf_sem 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:cf_signals 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd></dl>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#alive-instance_method" title="#alive (instance method)">- (Integer) <strong>alive</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#close-instance_method" title="#close (instance method)">- (Integer) <strong>close</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#delete-instance_method" title="#delete (instance method)">- (nil) <strong>delete</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#init-instance_method" title="#init (instance method)">- (Integer) <strong>init</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="alive-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>alive</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+94
+95
+96</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/loop.rb', line 94</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_alive'>alive</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_loop_alive'>loop_alive</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="close-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>close</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+84
+85
+86</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/loop.rb', line 84</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_close'>close</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_loop_close'>loop_close</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="delete-instance_method">
+  
+    - (<tt>nil</tt>) <strong>delete</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>nil</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+89
+90
+91</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/loop.rb', line 89</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_loop_delete'>loop_delete</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="init-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>init</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+79
+80
+81</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/loop.rb', line 79</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_init'>init</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_loop_init'>loop_init</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Mon Jun 16 00:26:40 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.4 (ruby-2.1.2).
+</div>
+
+  </body>
+</html>

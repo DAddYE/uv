@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: UV::FsWrappers
+  
+    &mdash; Documentation by YARD 0.8.7.4
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!UV/FsWrappers.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (F)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../UV.html" title="UV (module)">UV</a></span></span>
+     &raquo; 
+    <span class="title">FsWrappers</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: UV::FsWrappers
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+    <dt class="r1">Included in:</dt>
+    <dd class="r1"><span class='object_link'><a href="Fs.html" title="UV::Fs (class)">Fs</a></span></dd>
+    
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/uv/fs.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>uv_fs_t is a subclass of uv_req_t</p>
+
+<p>## Fields:</p>
+<dl class="rdoc-list note-list"><dt>:data 
+<dd>
+<p>(FFI::Pointer(*Void))</p>
+</dd><dt>:type 
+<dd>
+<p>(Symbol from `enum_req_type`)</p>
+</dd><dt>:active_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:fs_type 
+<dd>
+<p>(Symbol from `enum_fs_type`)</p>
+</dd><dt>:loop 
+<dd>
+<p>(Loop)</p>
+</dd><dt>:cb 
+<dd>
+<p>(Proc(callback_fs_cb))</p>
+</dd><dt>:result 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:ptr 
+<dd>
+<p>(FFI::Pointer(*Void))</p>
+</dd><dt>:path 
+<dd>
+<p>(String)</p>
+</dd><dt>:statbuf 
+<dd>
+<p>(Stat)</p>
+</dd><dt>:new_path 
+<dd>
+<p>(String)</p>
+</dd><dt>:file 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:flags 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:mode 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:nbufs 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:bufs 
+<dd>
+<p>(Buf)</p>
+</dd><dt>:off 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:uid 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:gid 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:atime 
+<dd>
+<p>(Float)</p>
+</dd><dt>:mtime 
+<dd>
+<p>(Float)</p>
+</dd><dt>:work_req 
+<dd>
+<p>(Work)</p>
+</dd><dt>:bufsml 
+<dd>
+<p>(Array&lt;Buf&gt;)</p>
+</dd></dl>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#req_cleanup-instance_method" title="#req_cleanup (instance method)">- (nil) <strong>req_cleanup</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="req_cleanup-instance_method">
+  
+    - (<tt>nil</tt>) <strong>req_cleanup</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>nil</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+53
+54
+55</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/fs.rb', line 53</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_req_cleanup'>req_cleanup</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_fs_req_cleanup'>fs_req_cleanup</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Mon Jun 16 00:26:40 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.4 (ruby-2.1.2).
+</div>
+
+  </body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: UV::SignalWrappers
+  
+    &mdash; Documentation by YARD 0.8.7.4
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!UV/SignalWrappers.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (S)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../UV.html" title="UV (module)">UV</a></span></span>
+     &raquo; 
+    <span class="title">SignalWrappers</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: UV::SignalWrappers
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+    <dt class="r1">Included in:</dt>
+    <dd class="r1"><span class='object_link'><a href="Signal.html" title="UV::Signal (class)">Signal</a></span></dd>
+    
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/uv/signal.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>UNIX signal handling on a per-event loop basis. The implementation is not
+ultra efficient so don&#39;t go creating a million event loops with a
+million signal watchers.</p>
+
+<p>Note to Linux users: SIGRT0 and SIGRT1 (signals 32 and 33) are used by the
+NPTL pthreads library to manage threads. Installing watchers for those
+signals will lead to unpredictable behavior and is strongly discouraged.
+Future versions of libuv may simply reject them.</p>
+
+<p>Reception of some signals is emulated on Windows:</p>
+
+<pre class="code ruby"><code class="ruby">SIGINT is normally delivered when the user presses CTRL+C. However, like
+on Unix, it is not generated when terminal raw mode is enabled.
+
+SIGBREAK is delivered when the user pressed CTRL+BREAK.
+
+SIGHUP is generated when the user closes the console window. On SIGHUP the
+program is given approximately 10 seconds to perform cleanup. After that
+Windows will unconditionally terminate it.
+
+SIGWINCH is raised whenever libuv detects that the console has been
+resized. SIGWINCH is emulated by libuv when the program uses an uv_tty_t
+handle to write to the console. SIGWINCH may not always be delivered in a
+timely manner; libuv will only detect size changes when the cursor is
+being moved. When a readable uv_tty_handle is used in raw mode, resizing
+the console buffer will also trigger a SIGWINCH signal.</code></pre>
+
+<p>Watchers for other signals can be successfully created, but these signals
+are never received. These signals are: SIGILL, SIGABRT, SIGFPE, SIGSEGV,
+SIGTERM and SIGKILL.</p>
+
+<p>Note that calls to raise() or abort() to programmatically raise a signal
+are not detected by libuv; these will not trigger a signal watcher.</p>
+
+<p>See uv_process_kill() and uv_kill() for information about support for
+sending signals.</p>
+
+<p>## Fields:</p>
+<dl class="rdoc-list note-list"><dt>:data 
+<dd>
+<p>(FFI::Pointer(*Void))</p>
+</dd><dt>:loop 
+<dd>
+<p>(Loop)</p>
+</dd><dt>:type 
+<dd>
+<p>(Symbol from `enum_handle_type`)</p>
+</dd><dt>:close_cb 
+<dd>
+<p>(Proc(callback_close_cb))</p>
+</dd><dt>:handle_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:next_closing 
+<dd>
+<p>(Handle)</p>
+</dd><dt>:flags 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:signal_cb 
+<dd>
+<p>(Proc(callback_signal_cb))</p>
+</dd><dt>:signum 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:tree_entry 
+<dd>
+<p>(SignalTreeEntry)</p>
+</dd><dt>:caught_signals 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:dispatched_signals 
+<dd>
+<p>(Integer)</p>
+</dd></dl>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#start-instance_method" title="#start (instance method)">- (Integer) <strong>start</strong>(signal_cb, signum) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#stop-instance_method" title="#stop (instance method)">- (Integer) <strong>stop</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="start-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>start</strong>(signal_cb, signum) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>signal_cb</span>
+      
+      
+        <span class='type'>(<tt>Proc(callback_signal_cb)</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>signum</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+68
+69
+70</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/signal.rb', line 68</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_start'>start</span><span class='lparen'>(</span><span class='id identifier rubyid_signal_cb'>signal_cb</span><span class='comma'>,</span> <span class='id identifier rubyid_signum'>signum</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_signal_start'>signal_start</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_signal_cb'>signal_cb</span><span class='comma'>,</span> <span class='id identifier rubyid_signum'>signum</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="stop-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>stop</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+73
+74
+75</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/signal.rb', line 73</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_stop'>stop</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_signal_stop'>signal_stop</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Mon Jun 16 00:26:40 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.4 (ruby-2.1.2).
+</div>
+
+  </body>
+</html>

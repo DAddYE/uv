@@ -1,0 +1,869 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: UV::TcpWrappers
+  
+    &mdash; Documentation by YARD 0.8.7.4
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!UV/TcpWrappers.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (T)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../UV.html" title="UV (module)">UV</a></span></span>
+     &raquo; 
+    <span class="title">TcpWrappers</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: UV::TcpWrappers
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+    <dt class="r1">Included in:</dt>
+    <dd class="r1"><span class='object_link'><a href="Tcp.html" title="UV::Tcp (class)">Tcp</a></span></dd>
+    
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/uv/tcp.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>uv_tcp_t is a subclass of uv_stream_t</p>
+
+<p>Represents a TCP stream or TCP server.</p>
+
+<p>## Fields:</p>
+<dl class="rdoc-list note-list"><dt>:data 
+<dd>
+<p>(FFI::Pointer(*Void))</p>
+</dd><dt>:loop 
+<dd>
+<p>(Loop)</p>
+</dd><dt>:type 
+<dd>
+<p>(Symbol from `enum_handle_type`)</p>
+</dd><dt>:close_cb 
+<dd>
+<p>(Proc(callback_close_cb))</p>
+</dd><dt>:handle_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:next_closing 
+<dd>
+<p>(Handle)</p>
+</dd><dt>:flags 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:write_queue_size 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:alloc_cb 
+<dd>
+<p>(Proc(callback_alloc_cb))</p>
+</dd><dt>:read_cb 
+<dd>
+<p>(Proc(callback_read_cb))</p>
+</dd><dt>:connect_req 
+<dd>
+<p>(Connect)</p>
+</dd><dt>:shutdown_req 
+<dd>
+<p>(Shutdown)</p>
+</dd><dt>:io_watcher 
+<dd>
+<p>(Io)</p>
+</dd><dt>:write_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:write_completed_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:connection_cb 
+<dd>
+<p>(Proc(callback_connection_cb))</p>
+</dd><dt>:delayed_error 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:accepted_fd 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:queued_fds 
+<dd>
+<p>(FFI::Pointer(*Void))</p>
+</dd><dt>:select 
+<dd>
+<p>(FFI::Pointer(*Void))</p>
+</dd></dl>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#bind-instance_method" title="#bind (instance method)">- (Integer) <strong>bind</strong>(addr, flags) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#getpeername-instance_method" title="#getpeername (instance method)">- (Integer) <strong>getpeername</strong>(name, namelen) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#getsockname-instance_method" title="#getsockname (instance method)">- (Integer) <strong>getsockname</strong>(name, namelen) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#keepalive-instance_method" title="#keepalive (instance method)">- (Integer) <strong>keepalive</strong>(enable, delay) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#nodelay-instance_method" title="#nodelay (instance method)">- (Integer) <strong>nodelay</strong>(enable) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#open-instance_method" title="#open (instance method)">- (Integer) <strong>open</strong>(sock) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#simultaneous_accepts-instance_method" title="#simultaneous_accepts (instance method)">- (Integer) <strong>simultaneous_accepts</strong>(enable) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="bind-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>bind</strong>(addr, flags) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>addr</span>
+      
+      
+        <span class='type'>(<tt>FFI::Pointer(*Sockaddr)</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>flags</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+76
+77
+78</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/tcp.rb', line 76</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_bind'>bind</span><span class='lparen'>(</span><span class='id identifier rubyid_addr'>addr</span><span class='comma'>,</span> <span class='id identifier rubyid_flags'>flags</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_tcp_bind'>tcp_bind</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_addr'>addr</span><span class='comma'>,</span> <span class='id identifier rubyid_flags'>flags</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="getpeername-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>getpeername</strong>(name, namelen) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>FFI::Pointer(*Sockaddr)</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>namelen</span>
+      
+      
+        <span class='type'>(<tt>FFI::Pointer(*Int)</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+90
+91
+92</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/tcp.rb', line 90</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_getpeername'>getpeername</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_namelen'>namelen</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_tcp_getpeername'>tcp_getpeername</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_namelen'>namelen</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="getsockname-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>getsockname</strong>(name, namelen) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>FFI::Pointer(*Sockaddr)</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>namelen</span>
+      
+      
+        <span class='type'>(<tt>FFI::Pointer(*Int)</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+83
+84
+85</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/tcp.rb', line 83</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_getsockname'>getsockname</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_namelen'>namelen</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_tcp_getsockname'>tcp_getsockname</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_namelen'>namelen</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="keepalive-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>keepalive</strong>(enable, delay) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>enable</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>delay</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+63
+64
+65</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/tcp.rb', line 63</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_keepalive'>keepalive</span><span class='lparen'>(</span><span class='id identifier rubyid_enable'>enable</span><span class='comma'>,</span> <span class='id identifier rubyid_delay'>delay</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_tcp_keepalive'>tcp_keepalive</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_enable'>enable</span><span class='comma'>,</span> <span class='id identifier rubyid_delay'>delay</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="nodelay-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>nodelay</strong>(enable) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>enable</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+56
+57
+58</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/tcp.rb', line 56</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_nodelay'>nodelay</span><span class='lparen'>(</span><span class='id identifier rubyid_enable'>enable</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_tcp_nodelay'>tcp_nodelay</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_enable'>enable</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="open-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>open</strong>(sock) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>sock</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+50
+51
+52</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/tcp.rb', line 50</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='id identifier rubyid_sock'>sock</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_tcp_open'>tcp_open</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_sock'>sock</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="simultaneous_accepts-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>simultaneous_accepts</strong>(enable) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>enable</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+69
+70
+71</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/tcp.rb', line 69</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_simultaneous_accepts'>simultaneous_accepts</span><span class='lparen'>(</span><span class='id identifier rubyid_enable'>enable</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_tcp_simultaneous_accepts'>tcp_simultaneous_accepts</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_enable'>enable</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Mon Jun 16 00:26:40 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.4 (ruby-2.1.2).
+</div>
+
+  </body>
+</html>

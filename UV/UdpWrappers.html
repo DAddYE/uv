@@ -1,0 +1,1195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: UV::UdpWrappers
+  
+    &mdash; Documentation by YARD 0.8.7.4
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!UV/UdpWrappers.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (U)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../UV.html" title="UV (module)">UV</a></span></span>
+     &raquo; 
+    <span class="title">UdpWrappers</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: UV::UdpWrappers
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+    <dt class="r1">Included in:</dt>
+    <dd class="r1"><span class='object_link'><a href="Udp.html" title="UV::Udp (class)">Udp</a></span></dd>
+    
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/uv/udp.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>uv_udp_t is a subclass of uv_handle_t</p>
+
+<p>## Fields:</p>
+<dl class="rdoc-list note-list"><dt>:data 
+<dd>
+<p>(FFI::Pointer(*Void))</p>
+</dd><dt>:loop 
+<dd>
+<p>(Loop)</p>
+</dd><dt>:type 
+<dd>
+<p>(Symbol from `enum_handle_type`)</p>
+</dd><dt>:close_cb 
+<dd>
+<p>(Proc(callback_close_cb))</p>
+</dd><dt>:handle_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:next_closing 
+<dd>
+<p>(Handle)</p>
+</dd><dt>:flags 
+<dd>
+<p>(Integer)</p>
+</dd><dt>:alloc_cb 
+<dd>
+<p>(Proc(callback_alloc_cb))</p>
+</dd><dt>:recv_cb 
+<dd>
+<p>(Proc(callback_udp_recv_cb))</p>
+</dd><dt>:io_watcher 
+<dd>
+<p>(Io)</p>
+</dd><dt>:write_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd><dt>:write_completed_queue 
+<dd>
+<p>(Array&lt;FFI::Pointer(*Void)&gt;)</p>
+</dd></dl>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#bind-instance_method" title="#bind (instance method)">- (Integer) <strong>bind</strong>(addr, flags) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#getsockname-instance_method" title="#getsockname (instance method)">- (Integer) <strong>getsockname</strong>(name, namelen) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#open-instance_method" title="#open (instance method)">- (Integer) <strong>open</strong>(sock) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#recv_start-instance_method" title="#recv_start (instance method)">- (Integer) <strong>recv_start</strong>(alloc_cb, recv_cb) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#recv_stop-instance_method" title="#recv_stop (instance method)">- (Integer) <strong>recv_stop</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_broadcast-instance_method" title="#set_broadcast (instance method)">- (Integer) <strong>set_broadcast</strong>(on) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_membership-instance_method" title="#set_membership (instance method)">- (Integer) <strong>set_membership</strong>(multicast_addr, interface_addr, membership) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_multicast_interface-instance_method" title="#set_multicast_interface (instance method)">- (Integer) <strong>set_multicast_interface</strong>(interface_addr) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_multicast_loop-instance_method" title="#set_multicast_loop (instance method)">- (Integer) <strong>set_multicast_loop</strong>(on) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_multicast_ttl-instance_method" title="#set_multicast_ttl (instance method)">- (Integer) <strong>set_multicast_ttl</strong>(ttl) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_ttl-instance_method" title="#set_ttl (instance method)">- (Integer) <strong>set_ttl</strong>(ttl) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="bind-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>bind</strong>(addr, flags) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>addr</span>
+      
+      
+        <span class='type'>(<tt>FFI::Pointer(*Sockaddr)</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>flags</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+39
+40
+41</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 39</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_bind'>bind</span><span class='lparen'>(</span><span class='id identifier rubyid_addr'>addr</span><span class='comma'>,</span> <span class='id identifier rubyid_flags'>flags</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_bind'>udp_bind</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_addr'>addr</span><span class='comma'>,</span> <span class='id identifier rubyid_flags'>flags</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="getsockname-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>getsockname</strong>(name, namelen) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>FFI::Pointer(*Sockaddr)</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>namelen</span>
+      
+      
+        <span class='type'>(<tt>FFI::Pointer(*Int)</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+46
+47
+48</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 46</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_getsockname'>getsockname</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_namelen'>namelen</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_getsockname'>udp_getsockname</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_namelen'>namelen</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="open-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>open</strong>(sock) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>sock</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+32
+33
+34</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 32</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='id identifier rubyid_sock'>sock</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_open'>udp_open</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_sock'>sock</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="recv_start-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>recv_start</strong>(alloc_cb, recv_cb) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>alloc_cb</span>
+      
+      
+        <span class='type'>(<tt>Proc(callback_alloc_cb)</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>recv_cb</span>
+      
+      
+        <span class='type'>(<tt>Proc(callback_udp_recv_cb)</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+91
+92
+93</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 91</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_recv_start'>recv_start</span><span class='lparen'>(</span><span class='id identifier rubyid_alloc_cb'>alloc_cb</span><span class='comma'>,</span> <span class='id identifier rubyid_recv_cb'>recv_cb</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_recv_start'>udp_recv_start</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_alloc_cb'>alloc_cb</span><span class='comma'>,</span> <span class='id identifier rubyid_recv_cb'>recv_cb</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="recv_stop-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>recv_stop</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+96
+97
+98</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 96</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_recv_stop'>recv_stop</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_recv_stop'>udp_recv_stop</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_broadcast-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>set_broadcast</strong>(on) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>on</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+78
+79
+80</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 78</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_set_broadcast'>set_broadcast</span><span class='lparen'>(</span><span class='id identifier rubyid_on'>on</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_set_broadcast'>udp_set_broadcast</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_on'>on</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_membership-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>set_membership</strong>(multicast_addr, interface_addr, membership) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>multicast_addr</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>interface_addr</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>membership</span>
+      
+      
+        <span class='type'>(<tt>Symbol from `enum_membership`</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+54
+55
+56</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 54</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_set_membership'>set_membership</span><span class='lparen'>(</span><span class='id identifier rubyid_multicast_addr'>multicast_addr</span><span class='comma'>,</span> <span class='id identifier rubyid_interface_addr'>interface_addr</span><span class='comma'>,</span> <span class='id identifier rubyid_membership'>membership</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_set_membership'>udp_set_membership</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_multicast_addr'>multicast_addr</span><span class='comma'>,</span> <span class='id identifier rubyid_interface_addr'>interface_addr</span><span class='comma'>,</span> <span class='id identifier rubyid_membership'>membership</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_multicast_interface-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>set_multicast_interface</strong>(interface_addr) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>interface_addr</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+72
+73
+74</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 72</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_set_multicast_interface'>set_multicast_interface</span><span class='lparen'>(</span><span class='id identifier rubyid_interface_addr'>interface_addr</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_set_multicast_interface'>udp_set_multicast_interface</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_interface_addr'>interface_addr</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_multicast_loop-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>set_multicast_loop</strong>(on) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>on</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+60
+61
+62</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 60</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_set_multicast_loop'>set_multicast_loop</span><span class='lparen'>(</span><span class='id identifier rubyid_on'>on</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_set_multicast_loop'>udp_set_multicast_loop</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_on'>on</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_multicast_ttl-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>set_multicast_ttl</strong>(ttl) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>ttl</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+66
+67
+68</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 66</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_set_multicast_ttl'>set_multicast_ttl</span><span class='lparen'>(</span><span class='id identifier rubyid_ttl'>ttl</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_set_multicast_ttl'>udp_set_multicast_ttl</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_ttl'>ttl</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_ttl-instance_method">
+  
+    - (<tt>Integer</tt>) <strong>set_ttl</strong>(ttl) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>ttl</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+84
+85
+86</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/uv/udp.rb', line 84</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_set_ttl'>set_ttl</span><span class='lparen'>(</span><span class='id identifier rubyid_ttl'>ttl</span><span class='rparen'>)</span>
+  <span class='const'>UV</span><span class='period'>.</span><span class='id identifier rubyid_udp_set_ttl'>udp_set_ttl</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_ttl'>ttl</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Mon Jun 16 00:26:40 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.4 (ruby-2.1.2).
+</div>
+
+  </body>
+</html>
