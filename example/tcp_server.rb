@@ -17,19 +17,17 @@ def listen(server)
   stream = UV::Stream.new(server.to_ptr)
   err = UV.listen(stream, 128, resume)
   refute_error(err)
-
-  wait
 end
+async :listen
 
-def read(req)
+# or in this way
+async def read(req)
   assert_kind_of(UV::Stream, req)
-
-  f = Fiber.current
 
   read_cb = ->(stream, nread, buf) do
     text = nread > 0 ? buf[:base].read_string(nread) : ''
     UV.free(buf[:base])
-    f.resume(stream, nread, text) if f.alive?
+    __fiber__.resume(stream, nread, text) if __fiber__.alive?
   end
 
   alloc_cb = ->(handle, size, buf) do
@@ -39,27 +37,21 @@ def read(req)
 
   err = UV.read_start(req, alloc_cb, read_cb)
   refute_error(err)
-
-  wait
 end
 
-def close(req)
+async def close(req)
   UV.close(UV::Handle.new(req.to_ptr), resume)
-  wait
 end
 
-def write(req, text)
+async def write(req, text)
   assert_kind_of(UV::Stream, req)
 
   buf = UV.buf_init(text, text.bytesize)
   err = UV.write(UV::Write.new, req, buf, 1, resume)
   refute_error(err)
-
-  wait
 end
 
-
-Fiber.new do
+sync do
   # Initialize the server
   server = UV::Tcp.new
   err = UV.tcp_init(LOOP, server)
@@ -93,8 +85,7 @@ Fiber.new do
       break
     end
   end
-end.
-resume
+end
 
 # RUN
 err = UV.run(LOOP, :uv_run_default)

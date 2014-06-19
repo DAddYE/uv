@@ -19,13 +19,33 @@ def wait
   Fiber.yield
 end
 
+def __fiber__
+  @___fiber__
+end
+
+def async(method_name)
+  unbound_method = method(method_name).clone
+  define_method(method_name) do |*args, &block|
+    begin
+      @___fiber__, was = Fiber.current, __fiber__
+      unbound_method[*args, &block]
+      Fiber.yield
+    ensure
+      @__fiber__ = was
+    end
+  end
+end
+
 def resume(&block)
-  fiber = Fiber.current
   ->(*args) do
     begin
       block[args] if block
     ensure
-      fiber.resume(*args)
+      __fiber__.resume(*args)
     end
   end
+end
+
+def sync(*args, &block)
+  Fiber.new(*args, &block).resume
 end
