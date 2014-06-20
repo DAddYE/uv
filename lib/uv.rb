@@ -83,6 +83,11 @@ module UV
   typedef SockaddrIn.by_ref, :sockaddr_in
   typedef SockaddrIn6.by_ref, :sockaddr_in6
 
+  def self.attach_function(name, func, args, returns = nil, options = {})
+    options.merge!(blocking: true) unless options.has_key?(:blocking)
+    super(name, func, args, returns, options)
+  end
+
   attach_function :malloc, [:size_t], :pointer
   attach_function :free, [:pointer], :void
 

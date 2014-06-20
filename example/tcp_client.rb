@@ -5,7 +5,7 @@ require 'uv'
 LOOP = UV.default_loop
 
 # Fiber methods
-def connect(client)
+async def connect(client)
   assert_kind_of(UV::Tcp, client)
 
   addr = UV::SockaddrIn.new
@@ -14,44 +14,37 @@ def connect(client)
 
   err = UV.tcp_connect(UV::Connect.new, client, addr, resume)
   refute_error(err)
-
-  wait
 end
 
-def write(req, text)
+async def write(req, text)
   assert_kind_of(UV::Connect, req)
   assert_kind_of(UV::Stream, req[:handle])
 
   buf = UV.buf_init(text, text.bytesize)
   err = UV.write(UV::Write.new, req[:handle], buf, 1, resume)
   refute_error(err)
-
-  wait
 end
 
-def read(req)
+async def read(req)
   assert_kind_of(UV::Stream, req[:handle])
 
-  f = Fiber.current
-
-  read_cb = ->(stream, nread, buf) do
+  read_cb = resume do |stream, nread, buf|
     text = nread > 0 ? buf[:base].read_string(nread) : ''
     UV.free(buf[:base])
-    f.resume(stream, nread, text) if f.alive?
+    [stream, nread, text]
   end
 
-  alloc_cb = ->(handle, size, buf) do
+  alloc_cb = resume do |handle, size, buf|
     buf[:len] = size
     buf[:base] = UV.malloc(size)
+    buf
   end
 
   err = UV.read_start(req[:handle], alloc_cb, read_cb)
   refute_error(err)
-
-  wait
 end
 
-Fiber.new do
+sync do
   # Initialization
   client = UV::Tcp.new
   err = UV.tcp_init(LOOP, client)
@@ -73,8 +66,10 @@ Fiber.new do
   # Ask to close the close
   _, err = write(connect_req, "quit\n")
   refute_error(err)
-end.
-resume
+end
+
+# Trap interupt
+uv_trap(LOOP, :INT){ |_, n| UV.stop(LOOP) }
 
 # RUN
 err = UV.run(LOOP, :uv_run_default)
