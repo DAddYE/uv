@@ -1,10 +1,9 @@
-require 'bundler/setup'
 require_relative './helpers'
-require 'uv'
 
 LOOP = UV.default_loop
 
-async def listen(server)
+async \
+def listen(server)
   assert_kind_of(UV::Tcp, server)
 
   # Create an ip4 address
@@ -23,7 +22,8 @@ async def listen(server)
 end
 
 # or in this way
-async def read(req)
+async \
+def read(req)
   assert_kind_of(UV::Stream, req)
 
   # This block *resume* the async call
@@ -44,11 +44,13 @@ async def read(req)
   refute_error(err)
 end
 
-async def close(req)
+async \
+def close(req)
   UV.close(UV::Handle.new(req.to_ptr), resume)
 end
 
-async def write(req, text)
+async \
+def write(req, text)
   assert_kind_of(UV::Stream, req)
 
   buf = UV.buf_init(text, text.bytesize)
@@ -57,26 +59,26 @@ async def write(req, text)
 end
 
 sync do
-  # Setup the server
+  log 'Setup the server'
   server = UV::Tcp.new
   err = UV.tcp_init(LOOP, server)
   refute_error(err)
 
-  # Start Listening
+  log 'Start Listening'
   server_stream, err = listen(server)
   refute_error(err)
 
-  # Setup the client
+  log 'Setup the client'
   client = UV::Tcp.new
   err = UV.tcp_init(LOOP, client)
   refute_error(err)
 
-  # Accept requests
+  log 'Accepting request'
   client_stream = UV::Stream.new(client.to_ptr)
   err = UV.accept(server_stream, client_stream)
   refute_error(err)
 
-  # Start echo-ing
+  log 'Start echo-ing'
   loop do
     # Read from the client stream
     _, err, buf = read(client_stream)

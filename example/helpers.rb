@@ -1,18 +1,36 @@
+require 'bundler/setup'
 require 'fiber'
+require 'uv'
 
+##
 # Helpers
+#
+# If callbacks are run from a separate C thread, any exceptions raised will not be propagated to
+# Ruby. Therefore, it may seem the callbacks are just not doing anything. In such cases, it is
+# helpful to add an exception handler inside the callback, even just to print the exception. Note
+# that this is is a special case, and exceptions will mostly be propagated up to the Ruby method
+# triggering the callback.  Rif.: https://github.com/mvz/ruby-gir-ffi/wiki/Exceptions-in-callbacks
+
 def refute_error(error_code)
-  return if error_code.nil?
+  refute_nil error_code if error_code.nil?
   return if error_code >= 0
   name = UV.err_name(error_code) || error_code
   msg  = UV.strerror(error_code)
   raise RuntimeError, "#{msg} - #{name}", caller
 end
 
+def refute_nil(actual)
+  raise ArgumentError, "expected #{actual} to not be nil", caller
+end
+
 def assert_kind_of(type, actual)
   return if actual.kind_of?(type)
-  msg = "value #{actual.inspect} is not a valid #{type}"
+  msg = "expected #{actual.inspect} to be a kind of #{type}, not #{actual.class}"
   raise ArgumentError, msg, caller
+end
+
+def log(*args)
+  puts "\e[32m#{args.join(' ')}\e[0m"
 end
 
 def wait
@@ -31,12 +49,6 @@ def async(method_name)
       unbound_method[*args, &block]
       Fiber.yield
     rescue Exception => e
-      # If callbacks are run from a separate C thread, any exceptions raised will not be propagated
-      # to Ruby. Therefore, it may seem the callbacks are just not doing anything. In such cases,
-      # it is helpful to add an exception handler inside the callback, even just to print the
-      # exception. Note that this is is a special case, and exceptions will mostly be propagated up
-      # to the Ruby method triggering the callback.
-      # Rif.: https://github.com/mvz/ruby-gir-ffi/wiki/Exceptions-in-callbacks
       warn(e, e.backtrace)
     ensure
       @___fiber__ = was
@@ -51,12 +63,6 @@ def resume(&block)
     begin
       args = block[args] if block
     rescue Exception => e
-      # If callbacks are run from a separate C thread, any exceptions raised will not be propagated
-      # to Ruby. Therefore, it may seem the callbacks are just not doing anything. In such cases,
-      # it is helpful to add an exception handler inside the callback, even just to print the
-      # exception. Note that this is is a special case, and exceptions will mostly be propagated up
-      # to the Ruby method triggering the callback.
-      # Rif.: https://github.com/mvz/ruby-gir-ffi/wiki/Exceptions-in-callbacks
       warn(e, e.backtrace)
     ensure
       f.resume(*args) if f && f.alive?

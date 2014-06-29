@@ -1,11 +1,10 @@
-require 'bundler/setup'
 require_relative './helpers'
-require 'uv'
 
 LOOP = UV.default_loop
 
 # Fiber methods
-async def connect(client)
+async \
+def connect(client)
   assert_kind_of(UV::Tcp, client)
 
   addr = UV::SockaddrIn.new
@@ -16,7 +15,8 @@ async def connect(client)
   refute_error(err)
 end
 
-async def write(req, text)
+async \
+def write(req, text)
   assert_kind_of(UV::Connect, req)
   assert_kind_of(UV::Stream, req[:handle])
 
@@ -25,16 +25,19 @@ async def write(req, text)
   refute_error(err)
 end
 
-async def read(req)
+async \
+def read(req)
   assert_kind_of(UV::Stream, req[:handle])
 
+  # This block *resume* the async call
   read_cb = resume do |stream, nread, buf|
     text = nread > 0 ? buf[:base].read_string(nread) : ''
     UV.free(buf[:base])
     [stream, nread, text]
   end
 
-  alloc_cb = resume do |handle, size, buf|
+  # This is just a plain callback
+  alloc_cb = ->(_, size, buf) do
     buf[:len] = size
     buf[:base] = UV.malloc(size)
     buf
@@ -45,25 +48,25 @@ async def read(req)
 end
 
 sync do
-  # Initialization
+  log 'Initialization'
   client = UV::Tcp.new
   err = UV.tcp_init(LOOP, client)
   refute_error(err)
 
-  # Open connection
+  log 'Open connection'
   connect_req, s = connect(client)
   raise 'Error with connection' if s == -1
 
-  # Start writing
+  log 'Start writing'
   write_req, err = write(connect_req, "hello\n")
   refute_error(err)
 
-  # Read the response
+  log 'Read the response'
   _, err, buf = read(write_req)
   refute_error(err)
   puts buf
 
-  # Ask to close the close
+  log 'Ask to close the close'
   _, err = write(connect_req, "quit\n")
   refute_error(err)
 end
